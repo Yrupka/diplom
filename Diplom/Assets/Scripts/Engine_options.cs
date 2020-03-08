@@ -33,15 +33,20 @@ public class Engine_options : MonoBehaviour
         Load();
     }
 
-    public void Confirm_button() // заполенение нулями пустых полей
+    public void Confirm_button()
     {
         if (string.IsNullOrEmpty(input_m.text)) input_m.text = "0";
         if (string.IsNullOrEmpty(input_l.text)) input_l.text = "0";
         if (string.IsNullOrEmpty(input_t.text)) input_t.text = "0";
 
-        options = new Engine_options_class(float.Parse(input_m.text),
-            float.Parse(input_l.text),
+        // для разшения формата float с точкой вместо запятой
+        System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+        options = new Engine_options_class(float.Parse(input_m.text, culture),
+            float.Parse(input_l.text, culture),
             int.Parse(input_t.text));
+
+        Debug.Log(options.fuel_amount);
+        Debug.Log(options.fuel_amount.ToString());
         options.Set_rpms(scroll.GetItems());
         
         value_update();
@@ -55,10 +60,14 @@ public class Engine_options : MonoBehaviour
 
     public void Load()
     {
+        // для разшения формата float с точкой вместо запятой
+        System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
         options = Save_controller.Load_engine_options();
         if (options != null)
         {
-            input_m.text = options.fuel_amount.ToString();
+            input_m.text = options.fuel_amount.ToString(culture);
+            input_l.text = options.lever_length.ToString(culture);
+            input_t.text = options.heat_time.ToString(culture);
             scroll.AddMany(options.Get_rpms());
         }
         value_update();
@@ -98,6 +107,7 @@ public class Engine_options_class
         this.fuel_amount = fuel_amount;
         this.lever_length = lever_length;
         this.heat_time = heat_time;
+        rpms = new List<struct_rpms>();
     }
 
     public void Set_rpms(string [,] rpm_val)

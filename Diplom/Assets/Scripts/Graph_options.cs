@@ -18,50 +18,45 @@ public class Graph_options : MonoBehaviour
         graph = transform.Find("Graph_window").GetComponent<Graph_script>();
         dropdown = transform.Find("Graph_list").GetComponent<Dropdown>();
         title = transform.Find("Graph_title");
-        dropdown.AddOptions(new List<string>() { "Выберите..." , "График мощности", "График момента", "График расхода" });
+        dropdown.AddOptions(new List<string>() { "Выберите..." , "График момента", "График мощности", "График расхода", "График удельного расхода" });
         dropdown.onValueChanged.AddListener(delegate { Graph_change(dropdown.value); }); 
     }
 
     public void Value_update()
     {
         options = engine_options.Get_engine_options();
-        if (options == null)
+        if (options.rpms.Count == 0)
             title.gameObject.SetActive(true);
         else
+        {
             title.gameObject.SetActive(false);
-        
-        Graph_change(dropdown.value);
+            Graph_change(dropdown.value);
+        }  
     }
 
     private void Graph_change(int value)
     {
+        List<float> list = new List<float>();
         switch (value)
         {
             case 1:
-                Show_graph_N();
+                for (int i = 0; i < options.rpms.Count; i++)
+                    list.Add(options.rpms[i].moment);
                 break;
             case 2:
-                Show_graph_m();
+                for (int i = 0; i < options.rpms.Count; i++)
+                    list.Add(options.rpms[i].rpm * options.rpms[i].moment / 9550);
+                break;
+            case 3:
+                for (int i = 0; i < options.rpms.Count; i++)
+                    list.Add(options.rpms[i].consumption * 3.6f);
+                break;
+            case 4:
+                for (int i = 0; i < options.rpms.Count; i++)
+                    list.Add((options.rpms[i].rpm * options.rpms[i].moment / 9550) / (options.rpms[i].consumption * 3.6f));
                 break;
         }
+        if (list.Count != 0)
+            graph.ShowGraph(list, -1, (int _i) => options.rpms[_i].rpm.ToString(), (float _i) => _i.ToString());
     }
-
-    private void Show_graph_N()
-    {
-        List<float> list = new List<float>();
-        for (int i = 0; i < options.rpms.Count; i++)
-            list.Add(options.rpms[i].rpm * options.rpms[i].moment / 9550);
-
-        graph.ShowGraph(list, -1, (int _i) => options.rpms[_i].rpm.ToString(), (float _i) => _i.ToString());
-    }
-
-    private void Show_graph_m()
-    {
-        List<float> list = new List<float>();
-        for (int i = 0; i < options.rpms.Count; i++)
-            list.Add(options.rpms[i].consumption);
-
-        graph.ShowGraph(list, -1, (int _i) => options.rpms[_i].rpm.ToString(), (float _i) => _i.ToString());
-    }
-
 }
