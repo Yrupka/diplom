@@ -22,13 +22,14 @@ public class Engine_controller : MonoBehaviour
         fuel_text = transform.Find("Fuel_amount").GetComponent<Text>();
         toggle_engine = transform.Find("Engine_start").GetComponent<Toggle>();
         gas_value = transform.Find("Gas").GetComponent<Slider>();
+        toggle_engine.onValueChanged.AddListener((value) => { Engine_control(value); });
+        
+        options = Save_controller.Load_engine_options();
+
         speedometer = transform.Find("Speedometer").GetComponent<Speedometer>();
         speedometer.Set_speed_max(7000f);
         p_meter = transform.Find("P_meter").GetComponent<Speedometer>();
         p_meter.Set_speed_max(options.Get_moment_max());
-        toggle_engine.onValueChanged.AddListener((value) => { Engine_control(value); });
-        
-        options = Save_controller.Load_engine_options();
         engine_start = false;
     }
 
@@ -77,7 +78,20 @@ public class Engine_controller : MonoBehaviour
 
     private float Rpm_p_count(int rpm_num) // расчет потраченного топлива на заданных оборотах в минуту
     {
-        return 0f;
+        int i = Get_index(rpm_num);
+        if (i >= 0)
+            return options.rpms[i].moment * options.lever_length;
+        else
+        {
+            i = i * (-1) - 1;
+            if (options.rpms.Count <= i)
+                return 0f;
+            else
+            {
+                float procents = rpm_num % 1000 / 1000f;
+                return Mathf.Lerp(options.rpms[i - 1].moment, options.rpms[i].moment, procents) * options.lever_length;
+            }
+        }
     }
 
     private int Get_index(int rpm_num)

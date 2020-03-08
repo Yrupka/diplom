@@ -8,7 +8,9 @@ public class Engine_options : MonoBehaviour
     [SerializeField]
     private Graph_options graph_options;
 
-    private InputField input_m;
+    private InputField input_m; // масса добавляемого топлива
+    private InputField input_l; // длина рычага тормозящего устройства
+    private InputField input_t; // время нагрева двигателя до рабочей температуры
     private Scroll_controller scroll;
     private Engine_options_class options;
 
@@ -19,6 +21,8 @@ public class Engine_options : MonoBehaviour
     {
         scroll = transform.Find("Scroll").GetComponent<Scroll_controller>();
         input_m = transform.Find("Input1").GetComponent<InputField>();
+        input_l = transform.Find("Input2").GetComponent<InputField>();
+        input_t = transform.Find("Input3").GetComponent<InputField>();
         transform.Find("Save_button").GetComponent<Button>().onClick.AddListener(() => Confirm_button());
         transform.Find("Load_button").GetComponent<Button>().onClick.AddListener(() => Load());
         value_update += graph_options.Value_update;
@@ -31,11 +35,13 @@ public class Engine_options : MonoBehaviour
 
     public void Confirm_button() // заполенение нулями пустых полей
     {
-        if (string.IsNullOrEmpty(input_m.text))
-            input_m.text = "0";
+        if (string.IsNullOrEmpty(input_m.text)) input_m.text = "0";
+        if (string.IsNullOrEmpty(input_l.text)) input_l.text = "0";
+        if (string.IsNullOrEmpty(input_t.text)) input_t.text = "0";
 
-        options = new Engine_options_class();
-        options.fuel_amount = int.Parse(input_m.text);
+        options = new Engine_options_class(float.Parse(input_m.text),
+            float.Parse(input_l.text),
+            int.Parse(input_t.text));
         options.Set_rpms(scroll.GetItems());
         
         value_update();
@@ -74,21 +80,24 @@ public class Engine_options_class
         public float moment;
         public float consumption;
 
-        public struct_rpms(int rpm_val, float moment_val, float consumption_val)
+        public struct_rpms(int rpm, float moment, float consumption)
         {
-            rpm = rpm_val;
-            moment = moment_val;
-            consumption = consumption_val;
+            this.rpm = rpm;
+            this.moment = moment;
+            this.consumption = consumption;
         }
     }
 
     public float fuel_amount;
+    public float lever_length;
+    public int heat_time;
     public List<struct_rpms> rpms;
 
-    public Engine_options_class()
+    public Engine_options_class(float fuel_amount, float lever_length, int heat_time)
     {
-        fuel_amount = 0f;
-        rpms = new List<struct_rpms>();
+        this.fuel_amount = fuel_amount;
+        this.lever_length = lever_length;
+        this.heat_time = heat_time;
     }
 
     public void Set_rpms(string [,] rpm_val)

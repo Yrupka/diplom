@@ -26,6 +26,10 @@ public class Speedometer : MonoBehaviour
         value = transform.Find("Value_info").Find("Value");
         info.GetComponent<Text>().text = value_name;
         label.gameObject.SetActive(false);
+    }
+
+    private void Start()
+    {
         Create_labels();
     }
 
