@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +28,7 @@ public class Engine_controller : MonoBehaviour
         speedometer = transform.Find("Speedometer").GetComponent<Speedometer>();
         speedometer.Set_speed_max(7000f);
         p_meter = transform.Find("P_meter").GetComponent<Speedometer>();
-        p_meter.Set_speed_max(options.Get_moment_max());
+        p_meter.Set_speed_max(options.Get_moment_max() / options.lever_length);
         engine_start = false;
     }
 
@@ -41,7 +40,7 @@ public class Engine_controller : MonoBehaviour
             options.fuel_amount -= Rpm_fuel_count(rpm_value_new);
             fuel_text.text = options.fuel_amount.ToString();
         }
-        rpm_value_old = (int)Mathf.Lerp(rpm_value_old, rpm_value_new, Time.deltaTime * 3);
+        rpm_value_old = (int)Mathf.Lerp(rpm_value_old, rpm_value_new, Time.deltaTime * 3f);
         speedometer.Set_speed(rpm_value_old);
         p_meter.Set_speed(Rpm_p_count(rpm_value_old));
     }
@@ -50,12 +49,7 @@ public class Engine_controller : MonoBehaviour
     {
         engine_start = value;
         if (!engine_start)
-        {
             rpm_value_new = 0;
-            fuel_text.text = options.fuel_amount.ToString();
-        }
-        else
-            rpm_value_new = 1000;
     }
 
     private float Rpm_fuel_count(int rpm_num) // расчет потраченного топлива на заданных оборотах в минуту
@@ -80,16 +74,16 @@ public class Engine_controller : MonoBehaviour
     {
         int i = Get_index(rpm_num);
         if (i >= 0)
-            return options.rpms[i].moment * options.lever_length;
+            return options.rpms[i].moment / options.lever_length;
         else
         {
             i = i * (-1) - 1;
-            if (options.rpms.Count <= i)
+            if (options.rpms.Count <= i || i == 0)
                 return 0f;
             else
             {
                 float procents = rpm_num % 1000 / 1000f;
-                return Mathf.Lerp(options.rpms[i - 1].moment, options.rpms[i].moment, procents) * options.lever_length;
+                return Mathf.Lerp(options.rpms[i - 1].moment, options.rpms[i].moment, procents) / options.lever_length;
             }
         }
     }
