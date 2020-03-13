@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class Item_button : Item_highligh
 {
+
+    private UnityAction click_action;
 
     private void OnMouseDown()
     {
@@ -12,5 +14,15 @@ public class Item_button : Item_highligh
     private void OnMouseUp()
     {
         transform.localPosition += new Vector3(0, 0, 0.03f);
+    }
+
+    private void OnMouseUpAsButton()
+    {
+        click_action();
+    }
+
+    public void Add_listener(UnityAction call)
+    {
+        click_action += call;
     }
 }
