@@ -1,16 +1,21 @@
 fileFormatVersion: 2
-guid: 26154458d14a38f45bd61949d36fd8ec
+guid: 99c8e9a0613191d47b4b4badb04c32b3
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: 17177_Balance
-    100002: //RootNode
-    400000: 17177_Balance
-    400002: //RootNode
-    2100000: 17177_BalanceMat
-    2300000: 17177_Balance
-    3300000: 17177_Balance
-    4300000: 17177_Balance
+    100000: Cube
+    100002: Cylinder
+    100004: //RootNode
+    400000: Cube
+    400002: Cylinder
+    400004: //RootNode
+    2100000: Material.001
+    2300000: Cube
+    2300002: Cylinder
+    3300000: Cube
+    3300002: Cylinder
+    4300000: Cylinder
+    4300002: Cube
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -42,7 +47,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.05
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
