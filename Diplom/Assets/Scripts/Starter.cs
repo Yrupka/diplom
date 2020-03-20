@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Starter : MonoBehaviour
 {
     private float val;
     private bool started;
     private List<float> positions;
+
+    private UnityAction action_started;
+    private UnityAction action_stoped;
 
     private void Awake()
     {
@@ -50,13 +54,14 @@ public class Starter : MonoBehaviour
         if (index == -4)
         {
             started = true; // двигатель завели
+            action_started();
             val = positions[2];
         }
         else
         {
             if (index < 0) // если ключ в промежтке между положениями
             {
-                index = index * (-1) - 1;
+                index = ~index;
                 if (positions[index] - 40 < val) // к какому положению ближе, на то и будет установлен
                     val = positions[index];
                 else
@@ -66,14 +71,22 @@ public class Starter : MonoBehaviour
                 val = positions[index];
 
             if (val < 40)
+            {
                 started = false;
+                action_stoped();
+            }
         }
 
         transform.localEulerAngles = new Vector3(-90f, 0, val); // поворот на заданный угол
     }
 
-    public bool Engine_state()
+    public void Add_listener_started(UnityAction action)
     {
-        return started;
+        action_started += action;
+    }
+
+    public void Add_listener_stoped(UnityAction action)
+    {
+        action_stoped += action;
     }
 }

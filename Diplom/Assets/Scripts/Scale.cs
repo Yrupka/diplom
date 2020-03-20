@@ -35,7 +35,7 @@ public class Scale : MonoBehaviour
     {
         weight = value;
         if (power_state)
-            value_text.text = (weight - zero_weight).ToString();
+            value_text.text = (weight - zero_weight).ToString("0.00");
         else
             value_text.text = "";
     }

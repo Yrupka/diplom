@@ -1,8 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Mediator_fuel : MonoBehaviour
+public class Fuel_controller : MonoBehaviour
 {
     private Scale scale;
     private Glass_detection detector;
@@ -25,7 +24,7 @@ public class Mediator_fuel : MonoBehaviour
         glass = transform.Find("Glass").GetComponent<Item_glass>();
     }
 
-    private void Fuel_update()
+    private void Update()
     {
         if (glass_on_scale)
             scale.Weight_set(glass.Get_weight());
@@ -38,7 +37,6 @@ public class Mediator_fuel : MonoBehaviour
         gas_tank.Play_animation();
         yield return new WaitForSeconds(1);
         glass.Fuel_update(gas_tank.Get_fuel());
-        Fuel_update();
     }
 
     private void Gas_tank_clicked()
@@ -50,12 +48,23 @@ public class Mediator_fuel : MonoBehaviour
     private void Glass_set() // стакан поставили на весы
     {
         glass_on_scale = true;
-        Fuel_update();
     }
 
     private void Glass_unset() // стакан сняли с весов
     {
         glass_on_scale = false;
-        Fuel_update();
+    }
+
+    public float Fuel_get()
+    {
+        if (glass_on_scale)
+            return glass.Get_fuel_weight();
+        else
+            return 0f;
+    }
+
+    public void Fuel_spent(float value)
+    {
+        glass.Fuel_update(-value);
     }
 }

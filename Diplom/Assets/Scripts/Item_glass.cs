@@ -49,4 +49,9 @@ public class Item_glass : Item_highligh
     {
         return weight_glass + weight_fuel;
     }
+
+    public float Get_fuel_weight()
+    {
+        return weight_fuel;
+    }
 }

@@ -8,12 +8,12 @@ public class Item_button : Item_highligh
 
     private void OnMouseDown()
     {
-        transform.localPosition -= new Vector3(0, 0, 0.03f);
+        transform.localPosition -= new Vector3(0f, 0.03f, 0f);
     }
 
     private void OnMouseUp()
     {
-        transform.localPosition += new Vector3(0, 0, 0.03f);
+        transform.localPosition += new Vector3(0f, 0.03f, 0f);
     }
 
     private void OnMouseUpAsButton()
