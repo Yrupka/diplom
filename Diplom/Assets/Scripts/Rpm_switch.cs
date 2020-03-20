@@ -34,9 +34,9 @@ public class Rpm_switch : MonoBehaviour
         transform.eulerAngles = new Vector3(0f, 0f, val); // поворот на заданный угол
     }
 
-    public float Get_rpm()
+    public int Get_rpm()
     {
         float procent = (val + 120) / 240f;
-        return Mathf.Lerp(7000f, 1000f, procent);
+        return (int)Mathf.Lerp(7000f, 1000f, procent);
     }
 }

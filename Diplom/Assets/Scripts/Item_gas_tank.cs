@@ -7,11 +7,13 @@ public class Item_gas_tank : Item_highligh
 {
     private UnityAction click_action;
     private Animator animation;
+    private float fuel_add_amount;
 
     private void Awake()
     {
         animation = GetComponent<Animator>();
         animation.speed = 0.1f;
+        fuel_add_amount = 10f; //!! load
     }
 
     private void OnMouseUpAsButton()
@@ -24,9 +26,13 @@ public class Item_gas_tank : Item_highligh
         click_action += call;
     }
 
-    private void Add_fuel()
+    public void Play_animation()
     {
-            //scale.Add_weight(30f); //!--
         animation.Play("Fuel_tank_act");
+    }
+
+    public float Get_fuel()
+    {
+        return fuel_add_amount;
     }
 }

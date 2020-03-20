@@ -35,16 +35,16 @@ public class Gauge : MonoBehaviour
     void Update()
     {
         speed = Mathf.Clamp(speed, 0f, max_speed);
-        needle.eulerAngles = new Vector3(90, 0, Get_rotation());
+        needle.localEulerAngles = new Vector3(90f, 0f, Get_rotation());
         value.GetComponent<TextMesh>().text = speed.ToString();
     }
 
-    public void Set_speed(float val)
+    public void Value(float val)
     {
         speed = val;
     }
 
-    public void Set_speed_max(float max_val)
+    public void Set_max_value(float max_val)
     {
         max_speed = max_val;
     }
