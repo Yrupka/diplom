@@ -8,6 +8,7 @@ public class Engine_controller : MonoBehaviour
     private Gauge gauge_p;
     private Rpm_switch rpm_switch;
     private Starter starter;
+    private Info_system info_system;
     private Engine_options_class options;
 
     private UnityAction action_start;
@@ -33,17 +34,21 @@ public class Engine_controller : MonoBehaviour
         starter = transform.Find("Starter").Find("Head").GetComponent<Starter>();
         starter.Add_listener_started(Engine_start);
         starter.Add_listener_stoped(Engine_stop);
+        info_system = transform.Find("Info_system").GetComponent<Info_system>();
     }
 
     private void Update()
     {
         if (engine_state)
         {
-            rpm = rpm_switch.Get_rpm();
-            fuel_weight -= Rpm_fuel_count(rpm_old);
+            rpm = rpm_switch.Get_rpm(); // получение числа оборотов с переключателя
+            fuel_weight -= Rpm_fuel_count(rpm_old); // расчет потраченного топлива
             if (fuel_weight <= 0)
+            {
                 Engine_stop();
-            action_update();
+                info_system.Fuel_on();
+            }
+            action_update(); // обновление количества топлива для весов
         }
         rpm_old = (int)Mathf.Lerp(rpm_old, rpm, Time.deltaTime * 3f);
         gauge_rpm.Value(rpm_old);
@@ -111,12 +116,14 @@ public class Engine_controller : MonoBehaviour
 
     private void Engine_start() // ключ в положении зажигания
     {
+        info_system.Fuel_off();
         engine_state = true;
         action_start();
     }
 
     private void Engine_stop() // ключ в выключенном положении
     {
+        info_system.Fuel_off();
         engine_state = false;
         fuel_weight = 0;
         rpm = 0;

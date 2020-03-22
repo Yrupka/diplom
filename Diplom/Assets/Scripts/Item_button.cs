@@ -3,17 +3,18 @@ using UnityEngine.Events;
 
 public class Item_button : Item_highligh
 {
-
+    [SerializeField]
+    private Vector3 direction;
     private UnityAction click_action;
 
     private void OnMouseDown()
     {
-        transform.localPosition -= new Vector3(0f, 0.03f, 0f);
+        transform.localPosition -= direction;
     }
 
     private void OnMouseUp()
     {
-        transform.localPosition += new Vector3(0f, 0.03f, 0f);
+        transform.localPosition += direction;
     }
 
     private void OnMouseUpAsButton()
