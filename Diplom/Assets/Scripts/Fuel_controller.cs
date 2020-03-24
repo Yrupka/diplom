@@ -35,8 +35,10 @@ public class Fuel_controller : MonoBehaviour
     IEnumerator Fuel_adding()
     {
         gas_tank.Play_animation();
-        yield return new WaitForSeconds(1);
-        glass.Fuel_update(gas_tank.Get_fuel());
+        yield return new WaitForSeconds(1f);
+        //!--
+        float fuel_to_add = gas_tank.Get_fuel();
+        glass.Fuel_update(Mathf.Lerp(glass.Get_fuel_weight(), fuel_to_add, Time.deltaTime * 3f));
     }
 
     private void Gas_tank_clicked()

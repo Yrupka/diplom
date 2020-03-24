@@ -1,23 +1,28 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class Item_glass : Item_highligh
 {
     private Transform base_parent;
+    private Transform fuel;
 
     private float weight_glass;
     private float weight_fuel;
     private float volume; // если будет несколько видов топлива !! разная плотность = разный объем
     private float volume_max;
+    private float t;
 
     private void Awake()
     {
         base_parent = transform.parent;
         GetComponent<Rigidbody>().freezeRotation = true;
+        fuel = transform.Find("Fuel");
+        fuel.gameObject.SetActive(false);
 
         weight_glass = 250f;
         weight_fuel = 0f;
         volume = 0f;
-        volume_max = 1000f;
+        volume_max = 100f;
     }
 
     private void OnMouseDown()
@@ -42,7 +47,16 @@ public class Item_glass : Item_highligh
         weight_fuel += amount;
         volume += amount * 1f; // плотность
 
+        weight_fuel = Mathf.Clamp(weight_fuel, 0f, 100f);
+
+        if (weight_fuel == 0)
+            fuel.gameObject.SetActive(false);
+        else
+            fuel.gameObject.SetActive(true);
+
         // изменить количество внутри визуально
+        fuel.localScale = new Vector3(fuel.localScale.x, weight_fuel / 100, fuel.localScale.z);
+        fuel.localPosition = new Vector3(0f, fuel.localScale.y - 1f, 0f); 
     }
     
     public float Get_weight() // вернуть общую массу
