@@ -19,6 +19,6 @@ public class Item_highligh : MonoBehaviour
 
     private void Set_highlite(Color color)
     {
-        GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
+        //GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
     }
 }
