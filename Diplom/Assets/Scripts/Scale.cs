@@ -40,4 +40,8 @@ public class Scale : MonoBehaviour
             value_text.text = "";
     }
 
+    public string Get_weight()
+    {
+        return value_text.text;
+    }
 }
