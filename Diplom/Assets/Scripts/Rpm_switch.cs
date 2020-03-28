@@ -36,7 +36,7 @@ public class Rpm_switch : MonoBehaviour
         val += dx + dy;
         val = Mathf.Clamp(val, -120f, 120f); // ограничение угла вращения от -120 градусов до 120
 
-        transform.localEulerAngles = new Vector3(0f, val, -180f); // поворот на заданный угол
+        transform.localEulerAngles = new Vector3(-90f, 0f , val); // поворот на заданный угол
     }
 
     public int Get_rpm()

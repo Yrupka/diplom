@@ -1,76 +1,21 @@
 fileFormatVersion: 2
-guid: ffcaf54dc16e3514da7346583352218f
+guid: 3918ba3afb08dbe419bb884acf9d5796
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: Block_1
-    100002: Block_2
-    100004: Block_3
-    100006: Block_4
-    100008: Block_5
-    100010: Block_6
-    100012: Block_7
-    100014: Block_8
-    100016: Block_9
-    100018: Body
-    100020: Curve
-    100022: Curve.001
-    100024: //RootNode
-    400000: Block_1
-    400002: Block_2
-    400004: Block_3
-    400006: Block_4
-    400008: Block_5
-    400010: Block_6
-    400012: Block_7
-    400014: Block_8
-    400016: Block_9
-    400018: Body
-    400020: Curve
-    400022: Curve.001
-    400024: //RootNode
-    2100000: Material.058
-    2100002: No Name
-    2100004: Material.061
-    2100006: Material.035
-    2100008: Material.060
-    2100010: Material.062
-    2300000: Block_1
-    2300002: Block_2
-    2300004: Block_3
-    2300006: Block_4
-    2300008: Block_5
-    2300010: Block_6
-    2300012: Block_7
-    2300014: Block_8
-    2300016: Block_9
-    2300018: Body
-    2300020: Curve
-    2300022: Curve.001
-    3300000: Block_1
-    3300002: Block_2
-    3300004: Block_3
-    3300006: Block_4
-    3300008: Block_5
-    3300010: Block_6
-    3300012: Block_7
-    3300014: Block_8
-    3300016: Block_9
-    3300018: Body
-    3300020: Curve
-    3300022: Curve.001
-    4300000: Curve.001
-    4300002: Curve
-    4300004: Block_2
-    4300006: Block_8
-    4300008: Block_6
-    4300010: Block_7
-    4300012: Body
-    4300014: Block_9
-    4300016: Block_4
-    4300018: Block_3
-    4300020: Block_5
-    4300022: Block_1
+    100000: Body
+    100002: Head
+    100004: //RootNode
+    400000: Body
+    400002: Head
+    400004: //RootNode
+    2100000: Material
+    2300000: Body
+    2300002: Head
+    3300000: Body
+    3300002: Head
+    4300000: Body
+    4300002: Head
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -102,7 +47,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.3
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1

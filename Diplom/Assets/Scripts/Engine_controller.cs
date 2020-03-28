@@ -30,7 +30,7 @@ public class Engine_controller : MonoBehaviour
         gauge_p = transform.Find("Gauge_p").GetComponent<Gauge>();
         if (options.lever_length != 0)
             gauge_p.Set_max_value(options.Get_moment_max() / options.lever_length);
-        rpm_switch = transform.Find("Rpm_switch").GetComponent<Rpm_switch>();
+        rpm_switch = transform.Find("Rpm_switch").Find("Head").GetComponent<Rpm_switch>();
         starter = transform.Find("Starter").Find("Head").GetComponent<Starter>();
         starter.Add_listener_started(Engine_start);
         starter.Add_listener_stoped(Engine_stop);
