@@ -4,6 +4,8 @@ using System.Collections;
 public class Engine_cam : MonoBehaviour
 {
 
+    private Rigidbody rigidbody;
+
     // Присваиваем переменные
     public float mouseSensitivity = 10f;
     public float speed = 5f;
@@ -20,6 +22,7 @@ public class Engine_cam : MonoBehaviour
     void Start()
     {
         originalRotation = transform.rotation;
+        rigidbody = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -33,22 +36,10 @@ public class Engine_cam : MonoBehaviour
         Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, Vector3.left);
         transform.rotation = originalRotation * xQuaternion * yQuaternion;
 
-        //// Ускорение при нажатии клавиши Shift
-        //if (Input.GetKeyDown(KeyCode.LeftShift))
-        //    speed *= 10;
-        //else if (Input.GetKeyUp(KeyCode.LeftShift))
-        //    speed /= 10;
-
-        //// Поднятие и опускание камеры
-        //Vector3 newPos = new Vector3(0, 1, 0);
-        //if (Input.GetKey(KeyCode.E))
-        //    transform.position += newPos * speed * Time.deltaTime;
-        //else if (Input.GetKey(KeyCode.Q))
-        //    transform.position -= newPos * speed * Time.deltaTime;
-
         // перемещение камеры
         transfer = transform.forward * Input.GetAxis("Vertical");
         transfer += transform.right * Input.GetAxis("Horizontal");
         transform.position += transfer * speed * Time.deltaTime;
+        rigidbody.velocity = Vector3.zero;
     }
 }
