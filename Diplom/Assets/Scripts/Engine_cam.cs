@@ -1,45 +1,46 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class Engine_cam : MonoBehaviour
 {
-
-    private Rigidbody rigidbody;
-
-    // Присваиваем переменные
-    public float mouseSensitivity = 10f;
-    public float speed = 5f;
+    [SerializeField]
+    private Texture2D cursor_texture;
     private Vector3 transfer;
-    public float minimumX = -360f;
-    public float maximumX = 360f;
-    public float minimumY = -60f;
-    public float maximumY = 60f;
-    float rotationX = 0f;
-    float rotationY = 0f;
-    Quaternion originalRotation;
 
+    private float speed = 5f;
+    private bool is_locked; // заблокирован ли курсор (нет - перемещение в 2д)
 
-    void Start()
+    void Awake()
     {
-        originalRotation = transform.rotation;
-        rigidbody = GetComponent<Rigidbody>();
+        Cursor.SetCursor(cursor_texture, Vector2.zero ,CursorMode.Auto);
+        is_locked = true;
+        GetComponent<Rigidbody>().freezeRotation = true;
     }
 
-    void Update()
+    private void Update()
     {
-        // Движения мыши -> Вращение камеры
-        rotationX += Input.GetAxis("Mouse X") * mouseSensitivity;
-        rotationY += Input.GetAxis("Mouse Y") * mouseSensitivity;
-        rotationX = Mathf.Clamp(rotationX, minimumX, maximumX);
-        rotationY = Mathf.Clamp(rotationY, minimumY, maximumY);
-        Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
-        Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, Vector3.left);
-        transform.rotation = originalRotation * xQuaternion * yQuaternion;
+        if (Input.GetKeyDown(KeyCode.Escape))
+            is_locked = false;
 
-        // перемещение камеры
-        transfer = transform.forward * Input.GetAxis("Vertical");
-        transfer += transform.right * Input.GetAxis("Horizontal");
-        transform.position += transfer * speed * Time.deltaTime;
-        rigidbody.velocity = Vector3.zero;
+        if (Input.GetMouseButtonDown(1)) // нажата правая кнопка мыши
+            is_locked = !is_locked;
+
+        if (is_locked) // режим полета в 3д
+        {
+            // повороты мыши
+            float h = Input.GetAxis("Mouse X");
+            float v = Input.GetAxis("Mouse Y");
+            if (h != 0 || v != 0)
+                transform.eulerAngles += new Vector3(-v, h, 0) * speed;
+
+            // перемещение камеры
+            transfer = transform.forward * Input.GetAxis("Vertical");
+            transfer += transform.right * Input.GetAxis("Horizontal");
+            transform.position += transfer * speed * Time.deltaTime;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else // режим выбора в 2д
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 }

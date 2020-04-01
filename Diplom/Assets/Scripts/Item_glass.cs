@@ -5,17 +5,18 @@ public class Item_glass : Item_highligh
 {
     private Transform base_parent;
     private Transform fuel;
+    private Rigidbody body;
 
     private float weight_glass;
     private float weight_fuel;
     private float volume; // если будет несколько видов топлива !! разная плотность = разный объем
     private float volume_max;
-    private float t;
 
     private void Awake()
     {
+        body = GetComponent<Rigidbody>();
         base_parent = transform.parent;
-        GetComponent<Rigidbody>().freezeRotation = true;
+        body.freezeRotation = true;
         fuel = transform.Find("Fuel");
         fuel.gameObject.SetActive(false);
 
@@ -28,7 +29,7 @@ public class Item_glass : Item_highligh
     private void OnMouseDown()
     {
         transform.SetParent(Camera.main.transform);
-        GetComponent<Rigidbody>().useGravity = false;
+        body.useGravity = false;
     }
 
     private void OnMouseDrag()
@@ -39,7 +40,7 @@ public class Item_glass : Item_highligh
     private void OnMouseUp()
     {
         transform.SetParent(base_parent);
-        GetComponent<Rigidbody>().useGravity = true;
+        body.useGravity = true;
     }
 
     public void Fuel_update(float amount) // добавить топлива или убрать топливо

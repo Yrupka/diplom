@@ -21,7 +21,7 @@ public class UI_timer : MonoBehaviour
         if (state)
         {
             time += Time.deltaTime;
-            text_value.text = "Значение: " + time.ToString("0.000");
+            text_value.text = time.ToString("00.00");
         }
     }
 
