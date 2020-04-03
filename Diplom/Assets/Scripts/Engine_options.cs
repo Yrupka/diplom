@@ -45,8 +45,6 @@ public class Engine_options : MonoBehaviour
             float.Parse(input_l.text, culture),
             int.Parse(input_t.text));
 
-        Debug.Log(options.fuel_amount);
-        Debug.Log(options.fuel_amount.ToString());
         options.Set_rpms(scroll.GetItems());
         
         value_update();

@@ -25,6 +25,8 @@ public class Gauge : MonoBehaviour
         value = transform.Find("Value");
         info.GetComponent<TextMesh>().text = value_name;
         label.gameObject.SetActive(false);
+        speed = 0f;
+        max_speed = 1f;
     }
 
     private void Start()

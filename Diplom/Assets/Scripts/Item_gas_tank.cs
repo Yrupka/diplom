@@ -7,13 +7,14 @@ public class Item_gas_tank : Item_highligh
 {
     private UnityAction click_action;
     private Animator animation;
+    private Engine_options_class options;
     private float fuel_add_amount;
 
-    private void Awake()
+    private void Start()
     {
         animation = GetComponent<Animator>();
-        animation.speed = 0.1f;
-        fuel_add_amount = 10f; //!! load
+        if (options != null)
+            fuel_add_amount = options.fuel_amount;
     }
 
     private void OnMouseUpAsButton()
@@ -21,9 +22,9 @@ public class Item_gas_tank : Item_highligh
         click_action();
     }
 
-    public void Add_listener(UnityAction call)
+    public void Load_options(Engine_options_class loaded_options) // получить загруженные данные
     {
-        click_action += call;
+        options = loaded_options;
     }
 
     public void Play_animation()
@@ -34,5 +35,10 @@ public class Item_gas_tank : Item_highligh
     public float Get_fuel()
     {
         return fuel_add_amount;
+    }
+
+    public void Add_listener(UnityAction call)
+    {
+        click_action += call;
     }
 }

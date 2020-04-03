@@ -19,22 +19,27 @@ public class Engine_controller : MonoBehaviour
     private int rpm_old;
     private float fuel_weight;
 
-    private void Awake()
+    private void Start()
     {
-        options = Save_controller.Load_engine_options();
-        engine_state = false;
-        rpm = 0;
+        if (options != null)
+        {
+            engine_state = false;
+            rpm = 0;
+            rpm_old = 0;
 
-        gauge_rpm = transform.Find("Gauge_rpm").GetComponent<Gauge>();
-        gauge_rpm.Set_max_value(7000f);
-        gauge_p = transform.Find("Gauge_p").GetComponent<Gauge>();
-        if (options.lever_length != 0)
-            gauge_p.Set_max_value(options.Get_moment_max() / options.lever_length);
-        rpm_switch = transform.Find("Rpm_switch").Find("Head").GetComponent<Rpm_switch>();
-        starter = transform.Find("Starter").Find("Head").GetComponent<Starter>();
-        starter.Add_listener_started(Engine_start);
-        starter.Add_listener_stoped(Engine_stop);
-        info_system = transform.Find("Info_system").GetComponent<Info_system>();
+            gauge_rpm = transform.Find("Gauge_rpm").GetComponent<Gauge>();
+            gauge_rpm.Set_max_value(7000f);
+            gauge_p = transform.Find("Gauge_p").GetComponent<Gauge>();
+            if (options.lever_length != 0)
+                gauge_p.Set_max_value(options.Get_moment_max() / options.lever_length);
+            rpm_switch = transform.Find("Rpm_switch").Find("Head").GetComponent<Rpm_switch>();
+            starter = transform.Find("Starter").Find("Head").GetComponent<Starter>();
+            starter.Add_listener_started(Engine_start);
+            starter.Add_listener_stoped(Engine_stop);
+            info_system = transform.Find("Info_system").GetComponent<Info_system>();
+        }
+        else
+            enabled = false; // функция обновления не будет работать
     }
 
     private void Update()
@@ -127,6 +132,11 @@ public class Engine_controller : MonoBehaviour
         engine_state = false;
         fuel_weight = 0;
         rpm = 0;
+    }
+
+    public void Load_options(Engine_options_class loaded_options) // получить загруженные данные
+    {
+        options = loaded_options;
     }
 
     public void Set_fuel(float value) // при включении двигателя, топливо взять из стакана

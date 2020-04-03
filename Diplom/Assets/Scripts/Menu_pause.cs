@@ -4,16 +4,19 @@ using UnityEngine.UI;
 
 public class Menu_pause : MonoBehaviour
 {
-    private bool isPaused = false;
+    private Transform options;
     private Transform pause;
-
+    private bool isPaused = false;
+    
     private void Awake()
     {
         pause = transform.Find("Pause");
+        options = transform.Find("Options");
         Transform buttons = pause.Find("Buttons");
-        buttons.Find("Back").GetComponent<Button>().onClick.AddListener(() => Resume());
-        buttons.Find("Main").GetComponent<Button>().onClick.AddListener(() => Main_menu());
-        buttons.Find("Quit").GetComponent<Button>().onClick.AddListener(() => Quit());
+        buttons.Find("Back").GetComponent<Button>().onClick.AddListener(Resume);
+        buttons.Find("Main").GetComponent<Button>().onClick.AddListener(Main_menu);
+        buttons.Find("Options").GetComponent<Button>().onClick.AddListener(Options);
+        buttons.Find("Quit").GetComponent<Button>().onClick.AddListener(Quit);
     }
 
     private void Start()
@@ -48,6 +51,11 @@ public class Menu_pause : MonoBehaviour
     private void Main_menu()
     {
         SceneManager.LoadScene("Main_menu");
+    }
+
+    private void Options()
+    {
+        options.gameObject.SetActive(true);
     }
 
     private void Quit()

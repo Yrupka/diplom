@@ -4,16 +4,20 @@ public class Engine_cam : MonoBehaviour
 {
     [SerializeField]
     private Texture2D cursor_texture;
+    [SerializeField]
+    private Menu_options options;
     private Vector3 transfer;
 
-    private float speed = 5f;
+    private float speed;
     private bool is_locked; // заблокирован ли курсор (нет - перемещение в 2д)
 
-    void Awake()
+    private void Awake()
     {
-        Cursor.SetCursor(cursor_texture, Vector2.zero ,CursorMode.Auto);
-        is_locked = true;
+        speed = 1f;
+        is_locked = false;
+        options.Add_mouse_sens_listener(Set_mouse_speed);
         GetComponent<Rigidbody>().freezeRotation = true;
+        Cursor.visible = true;
     }
 
     private void Update()
@@ -37,10 +41,17 @@ public class Engine_cam : MonoBehaviour
             transfer += transform.right * Input.GetAxis("Horizontal");
             transform.position += transfer * speed * Time.deltaTime;
             Cursor.lockState = CursorLockMode.Locked;
+            Cursor.SetCursor(cursor_texture, Vector2.zero, CursorMode.Auto);
         }
         else // режим выбора в 2д
         {
             Cursor.lockState = CursorLockMode.None;
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
+    }
+
+    public void Set_mouse_speed()
+    {
+        speed = options.Get_sens();
     }
 }
