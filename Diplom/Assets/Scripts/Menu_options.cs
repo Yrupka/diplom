@@ -40,7 +40,7 @@ public class Menu_options : MonoBehaviour
     private void Mouse_sensitivity_slider(float value)
     {
         mouse_sens_value = value;
-        mouse_input.text = mouse_sens_value.ToString();
+        mouse_input.text = mouse_sens_value.ToString(culture);
     }
 
     private void Mouse_sensitivity_input(string text)

@@ -13,9 +13,9 @@ public class Engine_cam : MonoBehaviour
 
     private void Awake()
     {
-        speed = 1f;
+        speed = 5f;
         is_locked = false;
-        options.Add_mouse_sens_listener(Set_mouse_speed);
+        //options.Add_mouse_sens_listener(Set_mouse_speed);
         GetComponent<Rigidbody>().freezeRotation = true;
         Cursor.visible = true;
     }
@@ -31,17 +31,16 @@ public class Engine_cam : MonoBehaviour
         if (is_locked) // режим полета в 3д
         {
             // повороты мыши
-            float h = Input.GetAxis("Mouse X");
-            float v = Input.GetAxis("Mouse Y");
-            if (h != 0 || v != 0)
-                transform.eulerAngles += new Vector3(-v, h, 0) * speed;
+            float mouse_x = Input.GetAxis("Mouse X");
+            float mouse_y = Input.GetAxis("Mouse Y");
+            transform.eulerAngles += new Vector3(-mouse_y, mouse_x, 0) * speed;
 
             // перемещение камеры
             transfer = transform.forward * Input.GetAxis("Vertical");
             transfer += transform.right * Input.GetAxis("Horizontal");
-            transform.position += transfer * speed * Time.deltaTime;
+            transform.position += transfer * 3f * Time.deltaTime;
             Cursor.lockState = CursorLockMode.Locked;
-            Cursor.SetCursor(cursor_texture, Vector2.zero, CursorMode.Auto);
+            Cursor.SetCursor(cursor_texture, new Vector2(15f, 15f), CursorMode.Auto);
         }
         else // режим выбора в 2д
         {

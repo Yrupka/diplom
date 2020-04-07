@@ -3,19 +3,20 @@ guid: 3051d51f2f0087a448d544b70ee41035
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: Cube
-    100002: Cylinder
-    100004: //RootNode
-    400000: Cube
-    400002: Cylinder
-    400004: //RootNode
+    100000: Body
+    100002: //RootNode
+    100004: Text
+    400000: Body
+    400002: //RootNode
+    400004: Text
     2100000: Material
-    2300000: Cube
-    2300002: Cylinder
-    3300000: Cube
-    3300002: Cylinder
-    4300000: Cylinder
-    4300002: Cube
+    2100002: No Name
+    2300000: Body
+    2300002: Text
+    3300000: Body
+    3300002: Text
+    4300000: Text
+    4300002: Body
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -47,7 +48,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 0.17
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
