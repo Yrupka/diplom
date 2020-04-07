@@ -9,11 +9,11 @@ public class Menu_options : MonoBehaviour
     private Slider mouse_slider;
     private InputField mouse_input;
     private Dropdown resolutions;
+    private Resolution[] resolutions_list;
     private System.Globalization.CultureInfo culture;
 
-    private Resolution[] resolutions_list;
-
     private float mouse_sens_value;
+    public bool mouse_sens_active;
 
     private void Awake()
     {
@@ -26,6 +26,9 @@ public class Menu_options : MonoBehaviour
 
         mouse_input = menu.Find("Mouse_sens").Find("Number").GetComponent<InputField>();
         mouse_input.onValueChanged.AddListener(Mouse_sensitivity_input);
+
+        if (!mouse_sens_active)
+            menu.Find("Mouse_sens").gameObject.SetActive(false);
 
         resolutions = menu.Find("Resolutions").Find("Dropdown").GetComponent<Dropdown>();
         resolutions.onValueChanged.AddListener(Resolutions);

@@ -15,10 +15,6 @@ public class Item_button : Item_highligh
     private void OnMouseUp()
     {
         transform.localPosition += direction;
-    }
-
-    private void OnMouseUpAsButton()
-    {
         click_action();
     }
 

@@ -1,25 +1,37 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class Item_gas_tank : Item_highligh
 {
     private UnityAction click_action;
-    private Animator animation;
+    private Animator anim;
     private Engine_options_class options;
+
     private float fuel_add_amount;
+    private bool interactable;
 
     private void Start()
     {
-        animation = GetComponent<Animator>();
+        anim = GetComponent<Animator>();
+        anim.SetFloat("speed", 0.3f);
         if (options != null)
             fuel_add_amount = options.fuel_amount;
+        interactable = true;
     }
 
-    private void OnMouseUpAsButton()
+    private void OnMouseUp()
     {
-        click_action();
+        if (interactable)
+            click_action();
+    }
+
+    IEnumerator Animation() // для предотвращения нажатия на объект во время анимации
+    {
+        interactable = false;
+        anim.Play("Fuel_add");
+        yield return new WaitForSeconds(3f);
+        interactable = true;
     }
 
     public void Load_options(Engine_options_class loaded_options) // получить загруженные данные
@@ -29,7 +41,7 @@ public class Item_gas_tank : Item_highligh
 
     public void Play_animation()
     {
-        animation.Play("Fuel_tank_act");
+        StartCoroutine(Animation());
     }
 
     public float Get_fuel()

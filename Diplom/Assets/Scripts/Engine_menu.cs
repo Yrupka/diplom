@@ -11,6 +11,8 @@ public class Engine_menu : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     private Transform timer;
     [SerializeField]
     private Transform scale;
+    [SerializeField]
+    private Transform hints;
 
     private Transform menu_tail;
 
@@ -18,6 +20,7 @@ public class Engine_menu : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         transform.Find("Scale").GetComponent<Toggle>().onValueChanged.AddListener((value) => scale.gameObject.SetActive(value));
         transform.Find("Timer").GetComponent<Toggle>().onValueChanged.AddListener((value) => timer.gameObject.SetActive(value));
+        transform.Find("Hints").GetComponent<Toggle>().onValueChanged.AddListener((value) => hints.gameObject.SetActive(value));
         menu_tail = transform.Find("Tail");
     }
 

@@ -5,23 +5,30 @@ public class Fuel_controller : MonoBehaviour
 {
     private Scale scale;
     private Glass_detection detector;
-    private Item_gas_tank gas_tank;
+    private Item_gas_tank fuel_tank;
     private Item_glass glass;
+    private Fuel_pomp fuel_pomp;
 
     private bool glass_on_scale;
+    private bool engine_in_work;
 
     private void Awake()
     {
+        fuel_pomp = transform.Find("Fuel_pomp").GetComponent<Fuel_pomp>();
+        fuel_pomp.Add_listener(Fuel_pomp_clicked);
+
         scale = transform.Find("Scale").GetComponent<Scale>();
 
         detector = scale.transform.Find("Glass_detection").GetComponent<Glass_detection>();
         detector.Add_listener_enter(Glass_set);
         detector.Add_listener_exit(Glass_unset);
 
-        gas_tank = transform.Find("Gas_tank").GetComponent<Item_gas_tank>();
-        gas_tank.Add_listener(Gas_tank_clicked);
+        fuel_tank = transform.Find("Fuel_tank").GetComponent<Item_gas_tank>();
+        fuel_tank.Add_listener(Gas_tank_clicked);
 
         glass = transform.Find("Glass").GetComponent<Item_glass>();
+
+        engine_in_work = false;
     }
 
     private void Update()
@@ -32,18 +39,29 @@ public class Fuel_controller : MonoBehaviour
             scale.Weight_set(0f);
     }
 
-    IEnumerator Fuel_adding()
+    private void Fuel_pomp_clicked()
     {
-        gas_tank.Play_animation();
-        yield return new WaitForSeconds(1f);
-        //!--
-        float fuel_to_add = gas_tank.Get_fuel();
-        glass.Fuel_update(Mathf.Lerp(glass.Get_fuel_weight(), fuel_to_add, Time.deltaTime * 3f));
+        if (glass_on_scale) // если стакан на весах
+            if (fuel_pomp.State_info()) // если насос уже в рабочем положении
+            {
+                if (!engine_in_work)
+                {
+                    fuel_pomp.Play_animation();
+                    fuel_pomp.Set_state(false);
+                    glass.Set_interactable(true);
+                }
+            }
+            else // если насос в нерабочем положении
+            {
+                fuel_pomp.Play_animation();
+                fuel_pomp.Set_state(true); // установить рабочее положение для помпы
+                glass.Set_interactable(false); // со стаканом нельзя взаимодействовать
+            }
     }
 
     private void Gas_tank_clicked()
     {
-        if (glass_on_scale)
+        if (glass_on_scale && !fuel_pomp.State_info())
             StartCoroutine(Fuel_adding());
     }
 
@@ -57,16 +75,45 @@ public class Fuel_controller : MonoBehaviour
         glass_on_scale = false;
     }
 
-    public float Fuel_get()
+    IEnumerator Fuel_adding() // добавление топлива в стакан
     {
-        if (glass_on_scale)
+        fuel_tank.Play_animation();
+        yield return new WaitForSeconds(1f);
+        float fuel_to_add = fuel_tank.Get_fuel();
+        for (int i = 0; i < 10; i++)
+        {
+            glass.Fuel_update(fuel_to_add / 10);
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    public float Fuel_get() // получение количества топлива для стенда двигателя
+    {
+        if (fuel_pomp.State_info())
             return glass.Get_fuel_weight();
         else
             return 0f;
     }
 
-    public void Fuel_spent(float value)
+    public void Fuel_spent(float value) // стенд двигателя изменяет значение топлива по мере работы
     {
         glass.Fuel_update(-value);
+    }
+
+    public void Set_engine_state(bool state)
+    {
+        engine_in_work = state;
+    }
+
+    public int State()
+    {
+        int state_count = 0;
+        if (glass_on_scale)
+            state_count++;
+        if (fuel_pomp.State_info())
+            state_count++;
+        if (engine_in_work)
+            state_count++;
+        return state_count;
     }
 }

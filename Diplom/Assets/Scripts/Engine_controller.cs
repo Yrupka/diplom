@@ -13,6 +13,7 @@ public class Engine_controller : MonoBehaviour
 
     private UnityAction action_start;
     private UnityAction action_update;
+    private UnityAction action_stop;
 
     private bool engine_state;
     private int rpm;
@@ -132,6 +133,7 @@ public class Engine_controller : MonoBehaviour
         engine_state = false;
         fuel_weight = 0;
         rpm = 0;
+        action_stop();
     }
 
     public void Load_options(Engine_options_class loaded_options) // получить загруженные данные
@@ -157,6 +159,11 @@ public class Engine_controller : MonoBehaviour
     public void Add_listener_update(UnityAction action)
     {
         action_update += action;
+    }
+
+    public void Add_listener_stop(UnityAction action)
+    {
+        action_stop += action;
     }
 
 }

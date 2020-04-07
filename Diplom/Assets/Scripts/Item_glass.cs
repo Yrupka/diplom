@@ -9,6 +9,7 @@ public class Item_glass : Item_highligh
 
     private float weight_glass;
     private float weight_fuel;
+    private float fuel_zero_pos; // начальная позиция объекта "топливо" в стакане
     private float volume; // если будет несколько видов топлива !! разная плотность = разный объем
     private float volume_max;
 
@@ -19,6 +20,7 @@ public class Item_glass : Item_highligh
         body.freezeRotation = true;
         fuel = transform.Find("Fuel");
         fuel.gameObject.SetActive(false);
+        fuel_zero_pos = Mathf.Abs(fuel.localPosition.y);
 
         weight_glass = 250f;
         weight_fuel = 0f;
@@ -56,8 +58,8 @@ public class Item_glass : Item_highligh
             fuel.gameObject.SetActive(true);
 
         // изменить количество внутри визуально
-        fuel.localScale = new Vector3(fuel.localScale.x, weight_fuel / 100, fuel.localScale.z);
-        fuel.localPosition = new Vector3(0f, fuel.localScale.y - 1f, 0f); 
+        fuel.localScale = new Vector3(fuel.localScale.x, weight_fuel * fuel_zero_pos / 100, fuel.localScale.z);
+        fuel.localPosition = new Vector3(0f, fuel.localScale.y - fuel_zero_pos, 0f); 
     }
     
     public float Get_weight() // вернуть общую массу
@@ -68,5 +70,11 @@ public class Item_glass : Item_highligh
     public float Get_fuel_weight()
     {
         return weight_fuel;
+    }
+
+    public void Set_interactable(bool state) // можно ли взаимодействовать со стаканом
+    {
+        body.useGravity = state;
+        transform.GetComponent<BoxCollider>().enabled = state;
     }
 }
