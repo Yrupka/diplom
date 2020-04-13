@@ -1,37 +1,41 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
-[System.Serializable]
 public class Scroll_controller : MonoBehaviour
 {
-    public GameObject prefab;
+    [SerializeField]
+    private GameObject prefab;
+    private Button add_button;
+    private Button del_button;
+    private RectTransform content;
+    private List<GameObject> items_list; // хранение ячеек на сцене
+    private UnityAction action_first;
+    private UnityAction action_second;
+    private UnityAction action_third;
+
+    private int size = 0;
     public string info1;
     public string info2;
     public string info3;
     public string info4;
 
-    private RectTransform content;
-    private List<GameObject> items_list; // хранение ячеек на сцене
-    private Button add_button;
-    private Button del_button;
-    private int size = 0;
-
     private void Awake()
     {
         Transform window = transform.Find("Scroll_window");
         content = window.Find("Content").GetComponent<RectTransform>();
-        items_list = new List<GameObject>();
-        size = 0;
         add_button = transform.Find("Add_btn").GetComponent<Button>();
+        add_button.onClick.AddListener(() => AddItem());
         del_button = transform.Find("Del_btn").GetComponent<Button>();
+        del_button.onClick.AddListener(() => DeleteItem());
         transform.Find("Info1").GetComponent<Text>().text = info1;
         transform.Find("Info2").GetComponent<Text>().text = info2;
         transform.Find("Info3").GetComponent<Text>().text = info3;
         transform.Find("Info4").GetComponent<Text>().text = info4;
-        add_button.onClick.AddListener(() => AddItem());
-        del_button.onClick.AddListener(() => DeleteItem());
+
+        items_list = new List<GameObject>();
+        size = 0;
     }
 
     private void DeleteAll() // удаление всех объектов списка
@@ -56,6 +60,22 @@ public class Scroll_controller : MonoBehaviour
             items_list.RemoveAt(size - 1);
             size--;
         }
+    }
+
+    private void CreateItem(Item item)
+    {
+        GameObject instanse = Instantiate(prefab); // клонируем префаб
+        instanse.transform.SetParent(content, false); // устанавливаем клону родителя
+        ItemModel model = new ItemModel(instanse.transform); // создаем по клону объект
+        model.num.text = item.number;
+        model.input1.text = item.first;
+        model.input1.onEndEdit.AddListener((val) => action_first());
+        model.input2.text = item.second;
+        model.input2.onEndEdit.AddListener((val) => action_second());
+        model.input3.text = item.third;
+        model.input3.onEndEdit.AddListener((val) => action_third());
+        items_list.Add(instanse);
+        size++;
     }
 
     public void AddMany(string[,] items)
@@ -83,19 +103,22 @@ public class Scroll_controller : MonoBehaviour
         return items;
     }
 
-    private void CreateItem(Item item)
+    public void Add_listener_update_first(UnityAction action)
     {
-        GameObject instanse = Instantiate(prefab); // клонируем префаб
-        instanse.transform.SetParent(content, false); // устанавливаем клону родителя
-        ItemModel model = new ItemModel(instanse.transform); // создаем по клону объект
-        model.num.text = item.number;
-        model.input1.text = item.first;
-        model.input2.text = item.second;
-        model.input3.text = item.third;
-        items_list.Add(instanse);
-        size++;
+        action_first += action;
     }
 
+    public void Add_listener_update_second(UnityAction action)
+    {
+        action_second += action;
+    }
+
+    public void Add_listener_update_third(UnityAction action)
+    {
+        action_third += action;
+    }
+
+    [System.Serializable]
     public class ItemModel
     {
         public Text num;
@@ -112,6 +135,7 @@ public class Scroll_controller : MonoBehaviour
         }
     }
 
+    [System.Serializable]
     public class Item
     {
         public string number;

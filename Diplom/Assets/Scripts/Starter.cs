@@ -6,6 +6,7 @@ public class Starter : MonoBehaviour
 {
     private float val;
     private bool started;
+    private float space_available;
     private List<float> positions;
 
     private UnityAction action_started;
@@ -16,6 +17,7 @@ public class Starter : MonoBehaviour
         positions = new List<float>(3){-120f, -40f, 40f};
         val = -120f;
         started = false;
+        space_available = 120f; // максимальный угол поворота
     }
     private void OnMouseDrag()
     {
@@ -41,7 +43,7 @@ public class Starter : MonoBehaviour
         dx *= 50f; // 50 - значение чувствительности
 
         val += dx + dy;
-        val = Mathf.Clamp(val, -120f, 120f); // ограничение угла вращения от -120 градусов до 120
+        val = Mathf.Clamp(val, -120f, space_available); // ограничение угла вращения от -120 градусов до 120
 
         transform.localEulerAngles = new Vector3(-90f, 0, val); // поворот на заданный угол
     }
@@ -78,6 +80,14 @@ public class Starter : MonoBehaviour
         }
 
         transform.localEulerAngles = new Vector3(-90f, 0, val); // поворот на заданный угол
+    }
+
+    public void Block(bool value) // если двигатель работает, нельзя запускать стартер
+    {
+        if (value)
+            space_available = 40f;
+        else
+            space_available = 120f;
     }
 
     public void Add_listener_started(UnityAction action)

@@ -26,14 +26,14 @@ public class Engine_menu : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        transform.position += new Vector3(100,0f);
+        transform.position += new Vector3(130,0f);
         menu_tail.gameObject.SetActive(false);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         
-        transform.position += new Vector3(-100, 0f);
+        transform.position += new Vector3(-130, 0f);
         menu_tail.gameObject.SetActive(true);
     }
 }

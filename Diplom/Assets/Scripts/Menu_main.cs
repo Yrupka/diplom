@@ -4,19 +4,21 @@ using UnityEngine.UI;
 
 public class Menu_main : MonoBehaviour
 {
-    private Transform main;
     private Transform options;
     private Transform password;
 
     private void Awake()
     {
-        main = transform.Find("Main");
-        main.Find("Simul").GetComponent<Button>().onClick.AddListener(() => Engine_stand());
-        main.Find("Quit").GetComponent<Button>().onClick.AddListener(() => Quit());
-        Transform options_obj = main.Find("Options_obj");
-        options = options_obj.Find("Options");
+        transform.Find("Main").Find("Quit").GetComponent<Button>().onClick.AddListener(() => Quit());
+
+        Transform student = transform.Find("Main").Find("Student");
+        student.Find("Simul").GetComponent<Button>().onClick.AddListener(() => Engine_stand());
+
+        Transform teacher = transform.Find("Main").Find("Teacher");
+        options = teacher.Find("Options");
         options.GetComponent<Button>().onClick.AddListener(() => Engine_options());
-        password = options_obj.Find("Password");
+
+        password = teacher.Find("Password");
         password.Find("Pass_button").GetComponent<Button>().onClick.AddListener(() => Password_check());
     }
 

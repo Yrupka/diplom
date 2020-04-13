@@ -32,6 +32,7 @@ public class Item_glass : Item_highligh
     {
         transform.SetParent(Camera.main.transform);
         body.useGravity = false;
+        body.drag = 1000;
     }
 
     private void OnMouseDrag()
@@ -43,6 +44,7 @@ public class Item_glass : Item_highligh
     {
         transform.SetParent(base_parent);
         body.useGravity = true;
+        body.drag = 0;
     }
 
     public void Fuel_update(float amount) // добавить топлива или убрать топливо

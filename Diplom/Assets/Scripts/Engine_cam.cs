@@ -15,7 +15,7 @@ public class Engine_cam : MonoBehaviour
     {
         speed = 5f;
         is_locked = false;
-        //options.Add_mouse_sens_listener(Set_mouse_speed);
+        options.Add_mouse_sens_listener(Set_mouse_speed);
         GetComponent<Rigidbody>().freezeRotation = true;
         Cursor.visible = true;
     }

@@ -12,12 +12,16 @@ public class UI_timer : MonoBehaviour
         text_value = transform.Find("Value").GetComponent<Text>();
         transform.Find("Start_stop").GetComponent<Button>().onClick.AddListener(Timer_start_stop);
         transform.Find("Discard").GetComponent<Button>().onClick.AddListener(Timer_discard);
-
+        
         Timer_discard();
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.V))
+            Timer_start_stop();
+        if (Input.GetKeyDown(KeyCode.B))
+            Timer_discard();
         if (state)
         {
             time += Time.deltaTime;

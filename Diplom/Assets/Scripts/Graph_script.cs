@@ -1,173 +1,170 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Graph_script : MonoBehaviour
 {
 
-    [SerializeField] private Sprite circleSprite;
-    private RectTransform graphContainer;
-    private RectTransform labelTemplateX;
-    private RectTransform labelTemplateY;
-    private RectTransform dashTemplateX;
-    private RectTransform dashTemplateY;
-    private List<GameObject> gameObjectList;
+    [SerializeField]
+    private Sprite circle_sprite;
+    private RectTransform graph_container;
+    private RectTransform label_template_x;
+    private RectTransform label_template_y;
+    private RectTransform dash_template_x;
+    private RectTransform dash_template_y;
+    private List<GameObject> game_object_list;
+    private Transform tooltip;
 
     private void Awake()
     {
-        graphContainer = transform.Find("Graph_conteiner").GetComponent<RectTransform>();
-        labelTemplateX = graphContainer.Find("Label_x").GetComponent<RectTransform>();
-        labelTemplateY = graphContainer.Find("Label_y").GetComponent<RectTransform>();
-        dashTemplateX = graphContainer.Find("Dash_x").GetComponent<RectTransform>();
-        dashTemplateY = graphContainer.Find("Dash_y").GetComponent<RectTransform>();
+        graph_container = transform.Find("Graph_conteiner").GetComponent<RectTransform>();
+        label_template_x = graph_container.Find("Label_x").GetComponent<RectTransform>();
+        label_template_y = graph_container.Find("Label_y").GetComponent<RectTransform>();
+        dash_template_x = graph_container.Find("Dash_x").GetComponent<RectTransform>();
+        dash_template_y = graph_container.Find("Dash_y").GetComponent<RectTransform>();
+        tooltip = graph_container.Find("Tooltip");
 
-        gameObjectList = new List<GameObject>();
+        game_object_list = new List<GameObject>();
     }
 
-    public void ShowGraph(List<float> valueList, int maxVisibleValueAmount = -1, Func<int, string> getAxisLabelX = null, Func<float, string> getAxisLabelY = null)
+    private void Tooltip_show(string text, Vector2 position)
     {
-        if (getAxisLabelX == null)
-        {
-            getAxisLabelX = delegate (int _i) { return _i.ToString(); };
-        }
-        if (getAxisLabelY == null)
-        {
-            getAxisLabelY = delegate (float _f) { return Mathf.RoundToInt(_f).ToString(); };
-        }
+        tooltip.gameObject.SetActive(true);
+        Text tooltip_text = tooltip.Find("Text").GetComponent<Text>();
+        tooltip_text.text = text;
+        tooltip.Find("Background").GetComponent<RectTransform>().sizeDelta =
+            new Vector2(tooltip_text.preferredWidth, tooltip_text.preferredHeight);
+        tooltip.SetAsLastSibling();
+    }
 
-        if (maxVisibleValueAmount <= 0)
-        {
-            maxVisibleValueAmount = valueList.Count;
-        }
+    private void Tooltip_hide()
+    {
+        tooltip.gameObject.SetActive(false);
+    }
 
-        foreach (GameObject gameObject in gameObjectList)
-        {
-            Destroy(gameObject);
-        }
-        gameObjectList.Clear();
+    private void Create_label_x(int val, float pos)
+    {
+        RectTransform labelX = Instantiate(label_template_x);
+        labelX.SetParent(graph_container, false);
+        labelX.gameObject.SetActive(true);
+        labelX.anchoredPosition = new Vector2(pos, -7f);
+        labelX.GetComponent<Text>().text = val.ToString();
+        game_object_list.Add(labelX.gameObject);
 
-        float graphWidth = graphContainer.sizeDelta.x;
-        float graphHeight = graphContainer.sizeDelta.y;
+        RectTransform dashX = Instantiate(dash_template_x);
+        dashX.SetParent(graph_container, false);
+        dashX.gameObject.SetActive(true);
+        dashX.anchoredPosition = new Vector2(pos, -3f);
+        game_object_list.Add(dashX.gameObject);
+    }
 
-        float yMaximum = valueList[0];
-        float yMinimum = valueList[0];
-
-        for (int i = Mathf.Max(valueList.Count - maxVisibleValueAmount, 0); i < valueList.Count; i++)
-        {
-            float value = valueList[i];
-            if (value > yMaximum)
-            {
-                yMaximum = value;
-            }
-            if (value < yMinimum)
-            {
-                yMinimum = value;
-            }
-        }
-
-        float yDifference = yMaximum - yMinimum;
-        if (yDifference <= 0)
-        {
-            yDifference = 5f;
-        }
-        yMaximum = yMaximum + (yDifference * 0.2f);
-
-        yMinimum = 0f; // Start the graph at zero
-
-        float xSize = graphWidth / (maxVisibleValueAmount + 1);
-
-        float xIndex = 0;
-
-        GameObject lastCircleGameObject = null;
-        for (int i = Mathf.Max(valueList.Count - maxVisibleValueAmount, 0); i < valueList.Count; i++)
-        {
-            float xPosition = xSize + xIndex * xSize;
-            float yPosition = ((valueList[i] - yMinimum) / (yMaximum - yMinimum)) * graphHeight;
-            GameObject circleGameObject = CreateCircle(new Vector2(xPosition, yPosition));
-            gameObjectList.Add(circleGameObject);
-            if (lastCircleGameObject != null)
-            {
-                GameObject dotConnectionGameObject = CreateDotConnection(lastCircleGameObject.GetComponent<RectTransform>().anchoredPosition, circleGameObject.GetComponent<RectTransform>().anchoredPosition);
-                gameObjectList.Add(dotConnectionGameObject);
-            }
-            lastCircleGameObject = circleGameObject;
-
-            RectTransform labelX = Instantiate(labelTemplateX);
-            labelX.SetParent(graphContainer, false);
-            labelX.gameObject.SetActive(true);
-            labelX.anchoredPosition = new Vector2(xPosition, -7f);
-            labelX.GetComponent<Text>().text = getAxisLabelX(i);
-            gameObjectList.Add(labelX.gameObject);
-
-            RectTransform dashX = Instantiate(dashTemplateX);
-            dashX.SetParent(graphContainer, false);
-            dashX.gameObject.SetActive(true);
-            dashX.anchoredPosition = new Vector2(xPosition, -3f);
-            gameObjectList.Add(dashX.gameObject);
-
-            xIndex++;
-        }
-        // --!
+    private void Create_labels_y(float hight, float max)
+    {
         float separatorCount = 10;
         for (float i = 0; i <= separatorCount; i++)
         {
-            RectTransform labelY = Instantiate(labelTemplateY);
-            labelY.SetParent(graphContainer, false);
+            RectTransform labelY = Instantiate(label_template_y);
+            labelY.SetParent(graph_container, false);
             labelY.gameObject.SetActive(true);
-            float normalizedValue = i * 1f / separatorCount;
-            labelY.anchoredPosition = new Vector2(-7f, normalizedValue * graphHeight);
+            float normalizedValue = i / separatorCount;
+            labelY.anchoredPosition = new Vector2(-7f, normalizedValue * hight);
 
-            labelY.GetComponent<Text>().text = getAxisLabelY(yMinimum + (normalizedValue * (yMaximum - yMinimum)));
-            gameObjectList.Add(labelY.gameObject);
+            labelY.GetComponent<Text>().text = (normalizedValue * max).ToString();
+            game_object_list.Add(labelY.gameObject);
 
-            RectTransform dashY = Instantiate(dashTemplateY);
-            dashY.SetParent(graphContainer, false);
+            RectTransform dashY = Instantiate(dash_template_y);
+            dashY.SetParent(graph_container, false);
             dashY.gameObject.SetActive(true);
-            dashY.anchoredPosition = new Vector2(-4f, normalizedValue * graphHeight);
-            gameObjectList.Add(dashY.gameObject);
+            dashY.anchoredPosition = new Vector2(-4f, normalizedValue * hight);
+            game_object_list.Add(dashY.gameObject);
         }
-        //
     }
 
-    private void ShowLabels()
+    private GameObject Create_circle(Vector2 anchored_position, Color color)
     {
-
-    }
-
-    private void ShowAxis()
-    {
-        
-    }
-
-    private GameObject CreateCircle(Vector2 anchoredPosition)
-    {
-        GameObject gameObject = new GameObject("circle", typeof(Image));
-        gameObject.transform.SetParent(graphContainer, false);
-        gameObject.GetComponent<Image>().sprite = circleSprite;
-        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = anchoredPosition;
-        rectTransform.sizeDelta = new Vector2(11, 11);
+        GameObject game_object = new GameObject("circle", typeof(Image));
+        game_object.transform.SetParent(graph_container, false);
+        game_object.GetComponent<Image>().sprite = circle_sprite;
+        game_object.GetComponent<Image>().color = color;
+        RectTransform rectTransform = game_object.GetComponent<RectTransform>();
+        rectTransform.anchoredPosition = anchored_position;
+        Vector2 size = new Vector2(7, 7);
+        if (color == Color.red)
+        {
+            CircleCollider2D collider = new CircleCollider2D();
+            size.Set(11, 11);
+        }
+        rectTransform.sizeDelta = size;
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
-        return gameObject;
+        return game_object;
     }
 
-    private GameObject CreateDotConnection(Vector2 dotPositionA, Vector2 dotPositionB)
+    private GameObject Create_dot_connection(Vector2 pos_a, Vector2 pos_b)
     {
-        GameObject gameObject = new GameObject("dotConnection", typeof(Image));
-        gameObject.transform.SetParent(graphContainer, false);
-        gameObject.GetComponent<Image>().color = new Color(1, 1, 1, .5f);
-        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-        Vector2 dir = (dotPositionB - dotPositionA).normalized;
-        float distance = Vector2.Distance(dotPositionA, dotPositionB);
+        GameObject game_object = new GameObject("dot_connection", typeof(Image));
+        game_object.transform.SetParent(graph_container, false);
+        game_object.GetComponent<Image>().color = new Color(1, 1, 1, .5f);
+        RectTransform rectTransform = game_object.GetComponent<RectTransform>();
+        Vector2 dir = (pos_b - pos_a).normalized;
+        float distance = Vector2.Distance(pos_a, pos_b);
         rectTransform.anchorMin = new Vector2(0, 0);
         rectTransform.anchorMax = new Vector2(0, 0);
         rectTransform.sizeDelta = new Vector2(distance, 3f);
-        rectTransform.anchoredPosition = dotPositionA + dir * distance * .5f;
+        rectTransform.anchoredPosition = pos_a + dir * distance * .5f;
         rectTransform.localEulerAngles = new Vector3(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
-        return gameObject;
+        rectTransform.SetAsFirstSibling();
+        return game_object;
+    }
+
+    public void Show_graph(List<float> value_list, List<int> label_x, int split_dot_number)
+    {
+        int max_visible = value_list.Count;
+
+        foreach (GameObject gameObject in game_object_list)
+        {
+            Destroy(gameObject);
+        }
+        game_object_list.Clear();
+
+        float graph_width = graph_container.sizeDelta.x;
+        float graph_height = graph_container.sizeDelta.y;
+
+        float max_y = Mathf.Max(value_list.ToArray()) + 1f;
+
+        float size_x = graph_width / (max_visible + 1);
+
+        GameObject last_circle_go = null;
+        for (int i = 0, red_dot = split_dot_number; i < max_visible; i++, red_dot++)
+        {
+            float position_x = size_x + i * size_x;
+            float position_y = value_list[i] / max_y * graph_height;
+
+            GameObject circle_go;
+            Color color = Color.white;
+            if (red_dot == split_dot_number)
+            {
+                color = Color.red;
+                red_dot = 0;
+                Create_label_x(label_x[i], position_x);
+            }
+            circle_go = Create_circle(new Vector2(position_x, position_y), color);
+            game_object_list.Add(circle_go);
+
+            if (last_circle_go != null)
+            {
+                GameObject dot_connection_go = Create_dot_connection(
+                    last_circle_go.GetComponent<RectTransform>().anchoredPosition,
+                    circle_go.GetComponent<RectTransform>().anchoredPosition);
+
+                game_object_list.Add(dot_connection_go);
+            }
+            last_circle_go = circle_go;
+
+
+        }
+        Create_labels_y(graph_height, max_y);
+        graph_container.Find("Background").SetAsFirstSibling(); // нужно чтобы фон ничего не загораживал
     }
 
 }
