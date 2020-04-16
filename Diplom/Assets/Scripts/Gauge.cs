@@ -38,7 +38,7 @@ public class Gauge : MonoBehaviour
     {
         speed = Mathf.Clamp(speed, 0f, max_speed);
         needle.localEulerAngles = new Vector3(90f, 0f, Get_rotation());
-        value.GetComponent<TextMesh>().text = speed.ToString();
+        value.GetComponent<TextMesh>().text = speed.ToString("0.00");
     }
 
     public void Value(float val)

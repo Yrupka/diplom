@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Item_glass : Item_highligh
+public class Item_glass : MonoBehaviour
 {
     private Transform base_parent;
     private Transform fuel;

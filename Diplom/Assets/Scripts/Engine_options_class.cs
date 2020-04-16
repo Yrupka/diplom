@@ -20,18 +20,20 @@ public class Engine_options_class
         }
     }
 
-    public float fuel_amount;
+    public int fuel_amount;
     public float lever_length;
     public int heat_time;
     public int interpolation;
+    public string[] hints;
     public List<struct_rpms> rpms;
 
-    public Engine_options_class(float fuel_amount, float lever_length, int heat_time, int interpolation)
+    public Engine_options_class(int fuel_amount, float lever_length, int heat_time, int interpolation)
     {
         this.fuel_amount = fuel_amount;
         this.lever_length = lever_length;
         this.heat_time = heat_time;
         this.interpolation = interpolation;
+        hints = new string[4];
         rpms = new List<struct_rpms>();
     }
 

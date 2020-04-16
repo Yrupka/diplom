@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class Graph_script : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject dot;
 
     [SerializeField]
     private Sprite circle_sprite;
@@ -13,7 +15,6 @@ public class Graph_script : MonoBehaviour
     private RectTransform dash_template_x;
     private RectTransform dash_template_y;
     private List<GameObject> game_object_list;
-    private Transform tooltip;
 
     private void Awake()
     {
@@ -22,24 +23,9 @@ public class Graph_script : MonoBehaviour
         label_template_y = graph_container.Find("Label_y").GetComponent<RectTransform>();
         dash_template_x = graph_container.Find("Dash_x").GetComponent<RectTransform>();
         dash_template_y = graph_container.Find("Dash_y").GetComponent<RectTransform>();
-        tooltip = graph_container.Find("Tooltip");
+        
 
         game_object_list = new List<GameObject>();
-    }
-
-    private void Tooltip_show(string text, Vector2 position)
-    {
-        tooltip.gameObject.SetActive(true);
-        Text tooltip_text = tooltip.Find("Text").GetComponent<Text>();
-        tooltip_text.text = text;
-        tooltip.Find("Background").GetComponent<RectTransform>().sizeDelta =
-            new Vector2(tooltip_text.preferredWidth, tooltip_text.preferredHeight);
-        tooltip.SetAsLastSibling();
-    }
-
-    private void Tooltip_hide()
-    {
-        tooltip.gameObject.SetActive(false);
     }
 
     private void Create_label_x(int val, float pos)
@@ -69,7 +55,7 @@ public class Graph_script : MonoBehaviour
             float normalizedValue = i / separatorCount;
             labelY.anchoredPosition = new Vector2(-7f, normalizedValue * hight);
 
-            labelY.GetComponent<Text>().text = (normalizedValue * max).ToString();
+            labelY.GetComponent<Text>().text = (normalizedValue * max).ToString("0.00");
             game_object_list.Add(labelY.gameObject);
 
             RectTransform dashY = Instantiate(dash_template_y);
@@ -78,26 +64,6 @@ public class Graph_script : MonoBehaviour
             dashY.anchoredPosition = new Vector2(-4f, normalizedValue * hight);
             game_object_list.Add(dashY.gameObject);
         }
-    }
-
-    private GameObject Create_circle(Vector2 anchored_position, Color color)
-    {
-        GameObject game_object = new GameObject("circle", typeof(Image));
-        game_object.transform.SetParent(graph_container, false);
-        game_object.GetComponent<Image>().sprite = circle_sprite;
-        game_object.GetComponent<Image>().color = color;
-        RectTransform rectTransform = game_object.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = anchored_position;
-        Vector2 size = new Vector2(7, 7);
-        if (color == Color.red)
-        {
-            CircleCollider2D collider = new CircleCollider2D();
-            size.Set(11, 11);
-        }
-        rectTransform.sizeDelta = size;
-        rectTransform.anchorMin = new Vector2(0, 0);
-        rectTransform.anchorMax = new Vector2(0, 0);
-        return game_object;
     }
 
     private GameObject Create_dot_connection(Vector2 pos_a, Vector2 pos_b)
@@ -145,10 +111,13 @@ public class Graph_script : MonoBehaviour
             if (red_dot == split_dot_number)
             {
                 color = Color.red;
-                red_dot = 0;
                 Create_label_x(label_x[i], position_x);
+                red_dot = 0;
             }
-            circle_go = Create_circle(new Vector2(position_x, position_y), color);
+            circle_go = Instantiate(dot);
+            circle_go.GetComponent<Red_dot>().Set_data(new Vector2(position_x, position_y),
+                    graph_container, label_x[i], value_list[i], color);
+            circle_go.transform.SetAsFirstSibling();
             game_object_list.Add(circle_go);
 
             if (last_circle_go != null)
@@ -166,5 +135,4 @@ public class Graph_script : MonoBehaviour
         Create_labels_y(graph_height, max_y);
         graph_container.Find("Background").SetAsFirstSibling(); // нужно чтобы фон ничего не загораживал
     }
-
 }

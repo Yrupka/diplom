@@ -1,24 +1,20 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class Item_highligh : MonoBehaviour
 {
+    private Renderer rend;
+
     private void Awake()
     {
-        Set_highlite(Color.clear);
+        rend = transform.GetComponent<Renderer>();
     }
 
     private void OnMouseEnter()
     {
-        Set_highlite(Color.red);
+        rend.material.color += Color.white;
     }
     private void OnMouseExit()
     {
-        Set_highlite(Color.clear);
-    }
-
-    private void Set_highlite(Color color)
-    {
-        //GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
+        rend.material.color -= Color.white;
     }
 }

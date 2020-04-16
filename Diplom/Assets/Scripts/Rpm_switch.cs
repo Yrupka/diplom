@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
-public class Rpm_switch : MonoBehaviour
+public class Rpm_switch : Item_highligh
 {
     private float val;
 
-    private void Awake()
+    private void Start()
     {
         val = -120f;
     }

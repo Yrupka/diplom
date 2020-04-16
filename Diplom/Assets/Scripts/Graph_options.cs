@@ -36,7 +36,7 @@ public class Graph_options : MonoBehaviour
         {
             value--;
             title.gameObject.SetActive(false);
-            graph.Show_graph(graph_data[value].label_y, graph_data[value].label_x, interpolation + 1);
+            graph.Show_graph(graph_data[value].label_y, graph_data[value].label_x, interpolation);
         }
     }
 
@@ -49,7 +49,7 @@ public class Graph_options : MonoBehaviour
 
         for (int j = 0; j < x.Count - 1; j++)
         {
-            for (int i = 0; i <= interpolation; i++)
+            for (int i = 0; i < interpolation; i++)
             {
                 int calculated_rpm = (int)Mathf.Lerp(x[j], x[j + 1], i * dot_place_procent);
                 graph_data[graph_num].label_x.Add(calculated_rpm);
@@ -60,7 +60,7 @@ public class Graph_options : MonoBehaviour
         graph_data[graph_num].label_y.Add(y[y.Count - 1]);
     }
 
-    // функция вычисляющая интерполирующую функцию графика, label_x,y - значения исходной функции
+    // функция вычисляющая интерполирующую состовляющую графика, label_x,y - значения исходной функции
     private float Interpolate(float x, List<int> label_x, List<float> label_y)
     {
         float answ = 0f;
@@ -96,7 +96,7 @@ public class Graph_options : MonoBehaviour
         List<int> label_x = options.Get_list_rpm();
         List<float> label_y_moment = options.Get_list_moment();
         List<float> label_y_consumption = options.Get_list_consumption();
-        interpolation = options.interpolation;
+        interpolation = options.interpolation + 1;
 
         switch (graph_num)
         {

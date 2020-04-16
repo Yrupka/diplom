@@ -6,24 +6,27 @@ public class UI_hints : MonoBehaviour
     [SerializeField]
     private Fuel_controller fuel_controller;
 
-    private Text text;
+    private Text text_info;
+    private RectTransform background;
 
     private string[] texts;
 
     private void Awake()
     {
-        text = transform.Find("Text").GetComponent<Text>();
-
-        texts = new string[4];
-        texts[0] = "Для начала работы, переместите мерный стакан со стола на весы";
-        texts[1] = "Необходимо налить топливо в стакан, для этого нужно нажать на канистру, стоящую на столе." +
-            "После наполнения стакана, необходимо нажать на устройство подачи топлива.";
-        texts[2] = "Можно заводить двигатель, необходимо повернуть левый переключатель на положение '3' и отпустить.";
-        texts[3] = "Можно приступать к работе, для удобства, в меню присутствуют секундомер и окно отображающее показания весов.";
+        text_info = transform.Find("Text").GetComponent<Text>();
+        background = transform.Find("Background").GetComponent<RectTransform>();
+        fuel_controller.Add_listener_state(Text_update);
     }
 
-    private void Update()
+    private void Text_update()
     {
-        text.text = texts[fuel_controller.State()];
+        text_info.text = texts[fuel_controller.State()];
+        background.sizeDelta = new Vector2(200, text_info.preferredHeight + 5);
+    }
+
+    public void Load_options(string[] loaded_options) // получить загруженные данные
+    {
+        texts = loaded_options;
+        Text_update();
     }
 }

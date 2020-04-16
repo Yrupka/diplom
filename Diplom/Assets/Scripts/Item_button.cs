@@ -3,8 +3,8 @@ using UnityEngine.Events;
 
 public class Item_button : Item_highligh
 {
-    [SerializeField]
-    private Vector3 direction;
+
+    public Vector3 direction;
     private UnityAction click_action;
 
     private void OnMouseDown()

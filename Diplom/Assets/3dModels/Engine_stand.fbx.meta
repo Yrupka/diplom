@@ -224,21 +224,21 @@ ModelImporter:
     3300100: Wire_7
     3300102: Wire_8
     3300104: Wire_9
-    4300000: Curve_2
-    4300002: Curve_1
-    4300004: Block_2
-    4300006: Block_7
-    4300008: Block_6
-    4300010: Engine_body
-    4300012: Block_8
-    4300014: Block_4
-    4300016: Block_3
-    4300018: Block_5
-    4300020: Engine_legs
-    4300022: Engine_legs_bolts_1
-    4300024: Engine_legs_bolts_2
-    4300026: Engine_legs_bolts_3
-    4300028: Engine_legs_bolts_4
+    4300000: Block_2
+    4300002: Block_7
+    4300004: Block_6
+    4300006: Engine_body
+    4300008: Block_8
+    4300010: Block_4
+    4300012: Block_3
+    4300014: Block_5
+    4300016: Engine_legs
+    4300018: Engine_legs_bolts_1
+    4300020: Engine_legs_bolts_2
+    4300022: Engine_legs_bolts_3
+    4300024: Engine_legs_bolts_4
+    4300026: Curve_1
+    4300028: Curve_2
     4300030: Electromotor_body
     4300032: Electromotor_bolts
     4300034: Rpm_sensor_body

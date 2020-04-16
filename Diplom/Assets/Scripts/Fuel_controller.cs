@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Fuel_controller : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class Fuel_controller : MonoBehaviour
     private Item_gas_tank fuel_tank;
     private Item_glass glass;
     private Fuel_pomp fuel_pomp;
+    private UnityAction action_hints;
 
     private bool glass_on_scale;
     private bool engine_in_work;
@@ -57,6 +59,7 @@ public class Fuel_controller : MonoBehaviour
                 fuel_pomp.Set_state(true); // установить рабочее положение для помпы
                 glass.Set_interactable(false); // со стаканом нельзя взаимодействовать
             }
+        action_hints();
     }
 
     private void Gas_tank_clicked()
@@ -68,22 +71,25 @@ public class Fuel_controller : MonoBehaviour
     private void Glass_set() // стакан поставили на весы
     {
         glass_on_scale = true;
+        action_hints();
     }
 
     private void Glass_unset() // стакан сняли с весов
     {
         glass_on_scale = false;
+        action_hints();
     }
 
     IEnumerator Fuel_adding() // добавление топлива в стакан
     {
         fuel_tank.Play_animation();
         yield return new WaitForSeconds(1f);
-        float fuel_to_add = fuel_tank.Get_fuel();
-        for (int i = 0; i < 10; i++)
+        int fuel_to_add = fuel_tank.Get_fuel();
+        for (int i = 0; i < fuel_to_add; i++)
         {
-            glass.Fuel_update(fuel_to_add / 10);
-            yield return new WaitForSeconds(0.1f);
+            Debug.Log(i);
+            glass.Fuel_update(1);
+            //yield return new WaitForSeconds(1f / fuel_to_add);
         }
     }
 
@@ -103,6 +109,7 @@ public class Fuel_controller : MonoBehaviour
     public void Set_engine_state(bool state)
     {
         engine_in_work = state;
+        action_hints();
     }
 
     public int State()
@@ -115,5 +122,10 @@ public class Fuel_controller : MonoBehaviour
         if (engine_in_work)
             state_count++;
         return state_count;
+    }
+
+    public void Add_listener_state(UnityAction action)
+    {
+        action_hints += action;
     }
 }

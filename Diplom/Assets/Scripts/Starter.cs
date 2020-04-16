@@ -2,17 +2,18 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Starter : MonoBehaviour
+public class Starter : Item_highligh
 {
     private float val;
     private bool started;
     private float space_available;
     private List<float> positions;
 
+    private UnityAction action_prestarted;
     private UnityAction action_started;
     private UnityAction action_stoped;
 
-    private void Awake()
+    private void Start()
     {
         positions = new List<float>(3){-120f, -40f, 40f};
         val = -120f;
@@ -77,6 +78,8 @@ public class Starter : MonoBehaviour
                 started = false;
                 action_stoped();
             }
+            if (val == 40)
+                action_prestarted();
         }
 
         transform.localEulerAngles = new Vector3(-90f, 0, val); // поворот на заданный угол
@@ -88,6 +91,11 @@ public class Starter : MonoBehaviour
             space_available = 40f;
         else
             space_available = 120f;
+    }
+
+    public void Add_listener_prestarted(UnityAction action)
+    {
+        action_prestarted += action;
     }
 
     public void Add_listener_started(UnityAction action)

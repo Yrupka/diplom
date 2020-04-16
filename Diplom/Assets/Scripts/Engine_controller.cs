@@ -4,17 +4,25 @@ using UnityEngine.Events;
 
 public class Engine_controller : MonoBehaviour
 {
+    [SerializeField]
+    private Animator anim;
     private Gauge gauge_rpm;
     private Gauge gauge_p;
     private Rpm_switch rpm_switch;
     private Starter starter;
     private Info_system info_system;
+    private Temperature temperature;
     private Engine_options_class options;
 
     private UnityAction action_start;
     private UnityAction action_update;
     private UnityAction action_stop;
 
+
+    private List<int> rpms;
+    private List<float> moments;
+    private List<float> consumptions;
+    private float lever_length;
     private bool engine_state;
     private int rpm;
     private int rpm_old;
@@ -22,22 +30,29 @@ public class Engine_controller : MonoBehaviour
 
     private void Start()
     {
-        if (options != null)
+        if (options.rpms.Count != 0)
         {
             engine_state = false;
             rpm = 0;
             rpm_old = 0;
+            rpms = options.Get_list_rpm();
+            moments = options.Get_list_moment();
+            consumptions = options.Get_list_consumption();
+            lever_length = options.lever_length;
 
             gauge_rpm = transform.Find("Gauge_rpm").GetComponent<Gauge>();
             gauge_rpm.Set_max_value(7000f);
             gauge_p = transform.Find("Gauge_p").GetComponent<Gauge>();
-            if (options.lever_length != 0)
-                gauge_p.Set_max_value(options.Get_moment_max() / options.lever_length);
+            gauge_p.Set_max_value(options.Get_moment_max() / lever_length);
             rpm_switch = transform.Find("Rpm_switch").Find("Head").GetComponent<Rpm_switch>();
             starter = transform.Find("Starter").Find("Head").GetComponent<Starter>();
+            starter.Add_listener_prestarted(Engine_prestart);
             starter.Add_listener_started(Engine_start);
             starter.Add_listener_stoped(Engine_stop);
             info_system = transform.Find("Info_system").GetComponent<Info_system>();
+            temperature = transform.Find("Temperature").GetComponent<Temperature>();
+            temperature.Heat_time_set(options.heat_time);
+            temperature.Add_listener_heated(Engine_heat_ready);
         }
         else
             enabled = false; // функция обновления не будет работать
@@ -47,93 +62,73 @@ public class Engine_controller : MonoBehaviour
     {
         if (engine_state)
         {
-            rpm = rpm_switch.Get_rpm(); // получение числа оборотов с переключателя
-            //fuel_weight -= Rpm_fuel_count(rpm_old); // расчет потраченного топлива
             if (fuel_weight <= 0)
             {
                 Engine_stop();
-                //info_system.Fuel_on();
+                info_system.Fuel(true);
             }
-            action_update(); // обновление количества топлива для весов
+            else
+            {
+                rpm = rpm_switch.Get_rpm(); // получение числа оборотов с переключателя
+                fuel_weight -= Interpolate(rpm_old, rpms, consumptions) / 3600f * temperature.Penalty();
+                action_update(); // обновление количества топлива для весов
+                anim.SetFloat("speed", rpm_old / 700);
+            }
         }
         rpm_old = (int)Mathf.Lerp(rpm_old, rpm, Time.deltaTime * 3f);
         gauge_rpm.Value(rpm_old);
-        //gauge_p.Value(Rpm_p_count(rpm_old));
+        gauge_p.Value(Interpolate(rpm_old, rpms, moments) / lever_length);
     }
 
-    //private float Rpm_fuel_count(int rpm_num) // расчет потраченного топлива на заданных оборотах в минуту
-    //{
-    //    int i = Get_index(rpm_num);
-    //    if (i >= 0) // если число оборотов совпадет с известным значением расхода, то вернуть это значение
-    //        return options.rpms[i].consumption / 3600f;
-    //    else // иначе нужно вычислить расход основываясь на известных данных
-    //    {
-    //        i = ~i;
-    //        if (options.rpms.Count <= i) // если нет показаний для данных оборотов, то расход нулевой
-    //            return 0f;
-    //        else // если показания расхода есть, то нужно высчитать расход по заданных оборотам
-    //        {
-    //            float procents = rpm_num % 1000 / 1000f;
-    //            float value;
-    //            if (i != 0)
-    //                value = Mathf.Lerp(options.rpms[i - 1].consumption, options.rpms[i].consumption, procents) / 3600f;
-    //            else
-    //                value = Mathf.Lerp(0f, options.rpms[0].consumption, procents) / 3600f;
-    //            return value;
-    //        }
-    //    }
-    //}
-
-    //private float Rpm_p_count(int rpm_num) // расчет потраченного топлива на заданных оборотах в минуту
-    //{
-    //    int i = Get_index(rpm_num);
-    //    if (i >= 0)
-    //        return options.rpms[i].moment / options.lever_length;
-    //    else
-    //    {
-    //        i = ~i;
-    //        if (options.rpms.Count <= i)
-    //            return 0f;
-    //        else
-    //        {
-    //            float procents = rpm_num % 1000 / 1000f;
-    //            float value;
-    //            if (i != 0)
-    //                value = Mathf.Lerp(options.rpms[i - 1].moment, options.rpms[i].moment, procents) / options.lever_length;
-    //            else
-    //                value = Mathf.Lerp(0f, options.rpms[0].moment, procents) / options.lever_length;
-    //            return value;
-    //        }
-    //    }
-    //}
-
-    private int Get_index(int rpm_num)
+    // функция вычисляющая интерполирующую состовляющую графика, label_x,y - значения исходной функции
+    private float Interpolate(float x, List<int> label_x, List<float> label_y)
     {
-        options.rpms.Sort((a, b) => a.rpm.CompareTo(b.rpm));
+        float answ = 0f;
+        for (int j = 0; j < label_x.Count; j++)
+        {
+            float l_j = 1f;
+            for (int i = 0; i < label_x.Count; i++)
+            {
+                if (i == j)
+                    l_j *= 1f;
+                else
+                    l_j *= (x - label_x[i]) / (label_x[j] - label_x[i]);
+            }
+            answ += l_j * label_y[j];
+        }
+        return answ;
+    }
 
-        // создаем список с значениями оборотов для поиска значения большего чем заданные обороты
-        List<int> only_rpm = new List<int>();
-        for (int i = 0; i < options.rpms.Count; i++)
-            only_rpm.Add(options.rpms[i].rpm);
+    private void Engine_heat_ready() // двигатель нагрет
+    {
+        info_system.Temp(false);
+    }
 
-        int index = only_rpm.BinarySearch(rpm_num);
-        return index;
+    private void Engine_prestart() // ключ в положении зажигания
+    {
+        if (!engine_state)
+            info_system.Pre_start();
     }
 
     private void Engine_start() // ключ в положении зажигания
     {
-        //info_system.Fuel_off();
-        starter.Block(true);
+        action_start(); // получили топливо
+        info_system.Check(true);
+        info_system.Fuel(false);
+        info_system.Temp(true);
+        temperature.Heat(true); // начать нагрев двс
         engine_state = true;
-        action_start();
+        starter.Block(true); // заблокировать стартер на запуск
     }
 
-    private void Engine_stop() // ключ в выключенном положении
+    private void Engine_stop() // ключ в положении отключен
     {
-        //info_system.Fuel_off();
+        info_system.Check(false);
+        info_system.Temp(false);
+        info_system.Fuel(false);
+        temperature.Heat(false);
         starter.Block(false);
         engine_state = false;
-        fuel_weight = 0;
         rpm = 0;
         action_stop();
     }
