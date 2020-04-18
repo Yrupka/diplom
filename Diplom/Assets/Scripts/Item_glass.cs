@@ -2,6 +2,7 @@
 
 public class Item_glass : MonoBehaviour
 {
+    private AudioSource sound;
     private Transform base_parent;
     private Transform fuel;
     private Rigidbody body;
@@ -9,11 +10,10 @@ public class Item_glass : MonoBehaviour
     private float weight_glass;
     private float weight_fuel;
     private float fuel_zero_pos; // начальная позиция объекта "топливо" в стакане
-    private float volume; // если будет несколько видов топлива !! разная плотность = разный объем
-    private float volume_max;
 
     private void Awake()
     {
+        sound = GetComponent<AudioSource>();
         body = GetComponent<Rigidbody>();
         base_parent = transform.parent;
         body.freezeRotation = true;
@@ -23,8 +23,6 @@ public class Item_glass : MonoBehaviour
 
         weight_glass = 250f;
         weight_fuel = 0f;
-        volume = 0f;
-        volume_max = 100f;
     }
 
     private void OnMouseDown()
@@ -46,10 +44,14 @@ public class Item_glass : MonoBehaviour
         body.drag = 0;
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        sound.Play();
+    }
+
     public void Fuel_update(float amount) // добавить топлива или убрать топливо
     {
         weight_fuel += amount;
-        volume += amount * 1f; // плотность
 
         weight_fuel = Mathf.Clamp(weight_fuel, 0f, 100f);
 

@@ -21,9 +21,10 @@ public class Engine_options_class
     }
 
     public int fuel_amount;
-    public float lever_length;
     public int heat_time;
     public int interpolation;
+    public float lever_length;
+    public float max_moment;
     public string[] hints;
     public List<struct_rpms> rpms;
 
@@ -60,18 +61,6 @@ public class Engine_options_class
             i++;
         }
         return converted_rpms;
-    }
-
-    public float Get_moment_max()
-    {
-        float[] moments = new float[rpms.Count];
-        int i = 0;
-        foreach (struct_rpms rpm in rpms)
-        {
-            moments[i] = rpm.moment;
-            i++;
-        }
-        return Mathf.Max(moments);
     }
 
     public List<int> Get_list_rpm()

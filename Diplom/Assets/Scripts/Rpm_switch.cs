@@ -4,7 +4,7 @@ public class Rpm_switch : Item_highligh
 {
     private float val;
 
-    private void Start()
+    private void Awake()
     {
         val = -120f;
     }

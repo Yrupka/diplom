@@ -55,4 +55,18 @@ public class Info_system : MonoBehaviour
         temp.material.color = Color.white;
     }
 
+    public void Off()
+    {
+        check.material.color = Color.clear;
+        fuel.material.color = Color.clear;
+        temp.material.color = Color.clear;
+    }
+
+    public bool Fuel_state()
+    {
+        if (fuel.material.color == Color.white)
+            return true;
+        return false;
+    }
+
 }

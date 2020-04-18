@@ -18,7 +18,10 @@ public class Graph_options : MonoBehaviour
         graph = transform.Find("Graph_window").GetComponent<Graph_script>();
         dropdown = transform.Find("Graph_list").GetComponent<Dropdown>();
         title = transform.Find("Graph_title");
-        dropdown.AddOptions(new List<string>() { "Выберите..." , "График момента", "График мощности", "График расхода", "График удельного расхода" });
+        dropdown.AddOptions(new List<string>() {
+            "Выберите..." , "Крутящий момент",
+            "Мощность",  "Часовой расход топлива",
+            "Удельный расход топлива" });
         dropdown.onValueChanged.AddListener(Graph_change);
         graph_data = new labels[4];
         for (int i = 0; i < 4; i++)
@@ -53,30 +56,11 @@ public class Graph_options : MonoBehaviour
             {
                 int calculated_rpm = (int)Mathf.Lerp(x[j], x[j + 1], i * dot_place_procent);
                 graph_data[graph_num].label_x.Add(calculated_rpm);
-                graph_data[graph_num].label_y.Add(Interpolate(calculated_rpm, x, y));
+                graph_data[graph_num].label_y.Add(Calculation_formulas.Interpolate(calculated_rpm, x, y));
             }
         }
         graph_data[graph_num].label_x.Add(x[x.Count - 1]);
         graph_data[graph_num].label_y.Add(y[y.Count - 1]);
-    }
-
-    // функция вычисляющая интерполирующую состовляющую графика, label_x,y - значения исходной функции
-    private float Interpolate(float x, List<int> label_x, List<float> label_y)
-    {
-        float answ = 0f;
-        for (int j = 0; j < label_x.Count; j++)
-        {
-            float l_j = 1f;
-            for (int i = 0; i < label_x.Count; i++)
-            {
-                if (i == j)
-                    l_j *= 1f;
-                else
-                    l_j *= (x - label_x[i])/(label_x[j] - label_x[i]);
-            }
-            answ += l_j * label_y[j];
-        }
-        return answ;
     }
 
     private struct labels
@@ -127,5 +111,10 @@ public class Graph_options : MonoBehaviour
                 break;
         }
         Graph_change(dropdown.value);
+    }
+
+    public float Get_max_moment()
+    {
+        return Mathf.Max(graph_data[0].label_y.ToArray());
     }
 }

@@ -8,7 +8,6 @@ public class Temperature : MonoBehaviour
     private int temp_curr;
     private int temp_max;
     private int step;
-    private bool heated;
     private bool state;
 
     private UnityAction action_heated;
@@ -18,38 +17,32 @@ public class Temperature : MonoBehaviour
         info = transform.Find("Info").GetComponent<TextMesh>();
         temp_curr = 25;
         temp_max = 70;
-        heated = false; // двс нагрет до рабочей температуры
-    }
-
-    private void Update()
-    {
         info.text = temp_curr.ToString();
-        if (!heated && temp_curr == 70)
-        {
-            heated = true;
-            action_heated();
-        }
     }
 
     IEnumerator Heating()
     {
-        while (state)
+        // задержка нужна для того, чтобы двигатель успел проверить наличие топлива, а не сразу начал греться
+        yield return new WaitForSeconds(1f); 
+        while (state && temp_curr != 70)
         {
             temp_curr += step;
             temp_curr = Mathf.Clamp(temp_curr, 25, temp_max);
-            yield return new WaitForSeconds(1f); 
+            info.text = temp_curr.ToString();
+            yield return new WaitForSeconds(1f);
         }
+        if (temp_curr == 70)
+            action_heated();
     }
 
     IEnumerator Cooling()
     {
-        while (!state)
+        while (!state && temp_curr != 25)
         {
             yield return new WaitForSeconds(2f);
-            if (heated)
-                heated = false;
             temp_curr -= step;
-            temp_curr = Mathf.Clamp(temp_curr, 25, temp_max);  
+            temp_curr = Mathf.Clamp(temp_curr, 25, temp_max);
+            info.text = temp_curr.ToString();
         }
     }
 

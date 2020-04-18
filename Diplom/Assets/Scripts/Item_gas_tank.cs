@@ -4,17 +4,18 @@ using UnityEngine.Events;
 
 public class Item_gas_tank : Item_highligh
 {
-    private UnityAction click_action;
+    private AudioSource sound;
     private Animator anim;
-
     private int fuel_add_amount;
     private bool interactable;
+    private UnityAction click_action;
 
-    private void Start()
+    private void Awake()
     {
+        sound = GetComponent<AudioSource>();
         anim = GetComponent<Animator>();
         anim.SetFloat("speed", 0.3f);
-        interactable = true;
+        interactable = true; 
     }
 
     private void OnMouseUp()
@@ -27,6 +28,7 @@ public class Item_gas_tank : Item_highligh
     {
         interactable = false;
         anim.Play("Fuel_add");
+        sound.Play();
         yield return new WaitForSeconds(3f);
         interactable = true;
     }
@@ -46,8 +48,8 @@ public class Item_gas_tank : Item_highligh
         return fuel_add_amount;
     }
 
-    public void Add_listener(UnityAction call)
+    public void Add_listener(UnityAction action)
     {
-        click_action += call;
+        click_action += action;
     }
 }

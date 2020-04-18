@@ -8,7 +8,7 @@ public class Fuel_controller : MonoBehaviour
     private Glass_detection detector;
     private Item_gas_tank fuel_tank;
     private Item_glass glass;
-    private Fuel_pomp fuel_pomp;
+    private Item_fuel_pomp fuel_pomp;
     private UnityAction action_hints;
 
     private bool glass_on_scale;
@@ -16,7 +16,7 @@ public class Fuel_controller : MonoBehaviour
 
     private void Awake()
     {
-        fuel_pomp = transform.Find("Fuel_pomp").GetComponent<Fuel_pomp>();
+        fuel_pomp = transform.Find("Fuel_pomp").GetComponent<Item_fuel_pomp>();
         fuel_pomp.Add_listener(Fuel_pomp_clicked);
 
         scale = transform.Find("Scale").GetComponent<Scale>();
@@ -56,8 +56,8 @@ public class Fuel_controller : MonoBehaviour
             else // если насос в нерабочем положении
             {
                 fuel_pomp.Play_animation();
-                fuel_pomp.Set_state(true); // установить рабочее положение для помпы
-                glass.Set_interactable(false); // со стаканом нельзя взаимодействовать
+                fuel_pomp.Set_state(true);
+                glass.Set_interactable(false);
             }
         action_hints();
     }
@@ -85,11 +85,11 @@ public class Fuel_controller : MonoBehaviour
         fuel_tank.Play_animation();
         yield return new WaitForSeconds(1f);
         int fuel_to_add = fuel_tank.Get_fuel();
+        float time_delay = 1f / fuel_to_add;
         for (int i = 0; i < fuel_to_add; i++)
         {
-            Debug.Log(i);
             glass.Fuel_update(1);
-            //yield return new WaitForSeconds(1f / fuel_to_add);
+            yield return new WaitForSeconds(time_delay);
         }
     }
 
@@ -116,11 +116,13 @@ public class Fuel_controller : MonoBehaviour
     {
         int state_count = 0;
         if (glass_on_scale)
+        {
             state_count++;
-        if (fuel_pomp.State_info())
-            state_count++;
-        if (engine_in_work)
-            state_count++;
+            if (fuel_pomp.State_info())
+                state_count++;
+            if (engine_in_work)
+                state_count++;
+        }
         return state_count;
     }
 

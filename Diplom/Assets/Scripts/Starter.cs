@@ -4,20 +4,22 @@ using UnityEngine.Events;
 
 public class Starter : Item_highligh
 {
+    enum Starter_state { stop, start, starting };
+
+    private Starter_state state;
+    private AudioSource sound;
     private float val;
-    private bool started;
     private float space_available;
     private List<float> positions;
-
     private UnityAction action_prestarted;
     private UnityAction action_started;
     private UnityAction action_stoped;
 
-    private void Start()
+    private void Awake()
     {
-        positions = new List<float>(3){-120f, -40f, 40f};
+        sound = GetComponent<AudioSource>();
+        positions = new List<float>(4){-120f, -40f, 40f, 120f};
         val = -120f;
-        started = false;
         space_available = 120f; // максимальный угол поворота
     }
     private void OnMouseDrag()
@@ -47,42 +49,43 @@ public class Starter : Item_highligh
         val = Mathf.Clamp(val, -120f, space_available); // ограничение угла вращения от -120 градусов до 120
 
         transform.localEulerAngles = new Vector3(-90f, 0, val); // поворот на заданный угол
+
+        if (val > 80 && state != Starter_state.starting)
+        {
+            action_started();
+            state = Starter_state.starting;
+        }
     }
 
     private void OnMouseUp()
     {
-
         int index = positions.BinarySearch(val); // поиск ближайшего положения
-        
-        if (index == -4)
+        if (index < 0) // если ключ в промежтке между положениями
         {
-            started = true; // двигатель завели
-            action_started();
-            val = positions[2];
+            sound.Play();
+            index = ~index;
+            if (positions[index] - 40 < val) // к какому положению ближе, на то и будет установлен
+                val = positions[index];
+            else
+                val = positions[index - 1];
         }
         else
-        {
-            if (index < 0) // если ключ в промежтке между положениями
-            {
-                index = ~index;
-                if (positions[index] - 40 < val) // к какому положению ближе, на то и будет установлен
-                    val = positions[index];
-                else
-                    val = positions[index - 1];
-            }
-            else
-                val = positions[index];
+            val = positions[index]; // если ключ прямо на положении
 
-            if (val < 40)
-            {
-                started = false;
-                action_stoped();
-            }
-            if (val == 40)
-                action_prestarted();
+        if (val > 40)
+            val = positions[2];
+        if (val < 40 && state != Starter_state.stop)
+        {
+            action_stoped();
+            state = Starter_state.stop;
+        }
+        if (val == 40 && state != Starter_state.start)
+        {
+            action_prestarted();
+            state = Starter_state.start;
         }
 
-        transform.localEulerAngles = new Vector3(-90f, 0, val); // поворот на заданный угол
+        transform.localEulerAngles = new Vector3(-90f, 0, val);
     }
 
     public void Block(bool value) // если двигатель работает, нельзя запускать стартер
