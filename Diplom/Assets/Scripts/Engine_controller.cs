@@ -7,7 +7,8 @@ public class Engine_controller : MonoBehaviour
 {
     private Gauge gauge_rpm;
     private Gauge gauge_p;
-    private Rpm_switch rpm_switch;
+    private Load_switch load_switch;
+    private Rpm_slider rpm_slider;
     private Starter starter;
     private Info_system info_system;
     private Temperature temperature;
@@ -20,11 +21,9 @@ public class Engine_controller : MonoBehaviour
     private UnityAction action_update;
     private UnityAction action_stop;
 
-    private List<int> rpms;
-    private List<float> moments;
-    private List<float> consumptions;
-    private float lever_length;
     private bool engine_state;
+    private float load_procent;
+    private bool load_state;
     private int rpm;
     private int rpm_old;
     private float fuel_weight;
@@ -36,17 +35,16 @@ public class Engine_controller : MonoBehaviour
             engine_state = false;
             rpm = 0;
             rpm_old = 0;
-            rpms = options.Get_list_rpm();
-            moments = options.Get_list_moment();
-            consumptions = options.Get_list_consumption();
-            lever_length = options.lever_length;
+            load_procent = 0f;
+            load_state = false;
 
             sound_source = GetComponent<AudioSource>();
             gauge_rpm = transform.Find("Gauge_rpm").GetComponent<Gauge>();
             gauge_rpm.Set_max_value(7000f);
             gauge_p = transform.Find("Gauge_p").GetComponent<Gauge>();
-            gauge_p.Set_max_value(options.max_moment / lever_length);
-            rpm_switch = transform.Find("Rpm_switch").Find("Head").GetComponent<Rpm_switch>();
+            gauge_p.Set_max_value(options.max_moment / options.lever_length);
+            load_switch = transform.Find("Load_switch").Find("Head").GetComponent<Load_switch>();
+            rpm_slider = transform.Find("Rpm_slider").Find("Head").GetComponent<Rpm_slider>();
             starter = transform.Find("Starter").Find("Head").GetComponent<Starter>();
             starter.Add_listener_prestarted(Engine_prestart);
             starter.Add_listener_started(Engine_start);
@@ -64,24 +62,40 @@ public class Engine_controller : MonoBehaviour
     {
         if (engine_state)
         {
-            if (fuel_weight <= 0)
+            if (fuel_weight > 0)
+            {
+                load_procent = rpm_slider.Get_procent() - load_switch.Get_procent();
+                rpm = (int)Mathf.Lerp(1000f, 7000f, load_procent);
+                fuel_weight -= Calculation_formulas.Interpolate(
+                    rpm_old, options.Get_list_rpm(), options.Get_list_consumption()) / 3600f * temperature.Penalty();
+
+                sound_source.pitch = rpm_old / 2000f;
+                sound_source.volume = Mathf.InverseLerp(1000f, 7000f, rpm) + 0.3f;
+                action_update(); // обновление количества топлива для весов
+                anim.SetFloat("speed", rpm_old / 700); // установка скорости для анимации
+
+                if (load_procent < 0 && !load_state)
+                {
+                    StartCoroutine(Engine_load_stop());
+                    load_state = true;
+                }
+                if (load_procent > 0 && load_state)
+                {
+                    StopAllCoroutines();
+                    load_state = false;
+                }
+
+            }
+            else
             {
                 Engine_stop();
                 info_system.Fuel(true);
             }
-            else
-            {
-                sound_source.pitch = rpm_old / 2000f;
-                sound_source.volume = Mathf.InverseLerp(1000f, 7000f, rpm) + 0.3f;
-                rpm = rpm_switch.Get_rpm(); // получение числа оборотов с переключателя
-                fuel_weight -= Calculation_formulas.Interpolate(rpm_old, rpms, consumptions) / 3600f * temperature.Penalty();
-                action_update(); // обновление количества топлива для весов
-                anim.SetFloat("speed", rpm_old / 700); // установка скорости для анимации
-            }
         }
         rpm_old = (int)Mathf.Lerp(rpm_old, rpm, Time.deltaTime * 3f);
         gauge_rpm.Value(rpm_old);
-        gauge_p.Value(Calculation_formulas.Interpolate(rpm_old, rpms, moments) / lever_length);
+        gauge_p.Value(Calculation_formulas.Interpolate(
+            rpm_old, options.Get_list_rpm(), options.Get_list_moment()) / options.lever_length);
     }
 
     private void Engine_heat_ready() // двигатель нагрет
@@ -147,6 +161,12 @@ public class Engine_controller : MonoBehaviour
         }
         else
             info_system.Fuel(true);
+    }
+
+    private IEnumerator Engine_load_stop()
+    {
+        yield return new WaitForSeconds(2f);
+        Engine_stop();
     }
 
     public void Load_options(Engine_options_class loaded_options) // получить загруженные данные

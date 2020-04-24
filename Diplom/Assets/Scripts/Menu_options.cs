@@ -10,7 +10,9 @@ public class Menu_options : MonoBehaviour
     private InputField mouse_input;
     private Dropdown resolutions;
     private Resolution[] resolutions_list;
+    private Toggle fullscreen_toggle;
     private Slider sound_slider;
+    private Toggle sound_toggle;
     private InputField sound_input;
     private System.Globalization.CultureInfo culture;
     public AudioMixerGroup audio_mixer;
@@ -19,6 +21,7 @@ public class Menu_options : MonoBehaviour
 
     private float mouse_sens_value;
     private float sound_level;
+    private int resolution_index;
     public bool in_game;
 
     private void Awake()
@@ -44,8 +47,8 @@ public class Menu_options : MonoBehaviour
         resolutions.onValueChanged.AddListener(Resolutions);
         Setup_resolutions();
 
-        menu.Find("Fullscreen").GetComponent<Toggle>().
-            onValueChanged.AddListener((value) => Screen.fullScreen = value);
+        fullscreen_toggle = menu.Find("Fullscreen").GetComponent<Toggle>();
+        fullscreen_toggle.onValueChanged.AddListener((value) => Screen.fullScreen = value);
 
         sound_slider = menu.Find("Sound").Find("Slider").GetComponent<Slider>();
         sound_slider.onValueChanged.AddListener(
@@ -54,10 +57,35 @@ public class Menu_options : MonoBehaviour
         sound_input = menu.Find("Sound").Find("Number").GetComponent<InputField>();
         sound_input.onValueChanged.AddListener(Sound_input);
 
-        menu.Find("Sound").Find("Toggle").GetComponent<Toggle>()
-            .onValueChanged.AddListener(Sound_toggle);
+        sound_toggle = menu.Find("Sound").Find("Toggle").GetComponent<Toggle>();
+        sound_toggle.onValueChanged.AddListener(Sound_toggle);
 
         menu.Find("Back").GetComponent<Button>().onClick.AddListener(Back);
+
+        mouse_sens_value = 3;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Back();
+    }
+
+    private void OnEnable()
+    {
+        // если есть сохраненые настройки приложения
+        if (PlayerPrefs.HasKey("screen"))
+        {
+            // загрузка параметров приложения
+            if (in_game)
+            {
+                sound_slider.value = PlayerPrefs.GetFloat("sound_level");
+                sound_toggle.isOn = PlayerPrefs.GetString("sound_state") == "True";
+                mouse_slider.value = PlayerPrefs.GetFloat("sens");
+            }
+            resolutions.value = PlayerPrefs.GetInt("res_index");
+            fullscreen_toggle.isOn = PlayerPrefs.GetString("screen") == "True";
+        }
     }
 
     private void Sound_input(string text)
@@ -101,10 +129,12 @@ public class Menu_options : MonoBehaviour
         resolutions.AddOptions(options);
         resolutions.value = curr_res;
         resolutions.RefreshShownValue();
+        resolution_index = curr_res;
     }
 
     private void Resolutions(int index)
     {
+        resolution_index = index;
         Screen.SetResolution(resolutions_list[index].width,
             resolutions_list[index].width,
             Screen.fullScreen);
@@ -121,6 +151,15 @@ public class Menu_options : MonoBehaviour
     private void Back()
     {
         transform.gameObject.SetActive(false);
+        // сохранение настроек приложения
+        if (in_game)
+        { 
+            PlayerPrefs.SetFloat("sound_level", sound_level);
+            PlayerPrefs.SetString("sound_state", sound_toggle.isOn.ToString());
+            PlayerPrefs.SetFloat("sens", mouse_sens_value);
+        }
+        PlayerPrefs.SetInt("res_index", resolution_index);
+        PlayerPrefs.SetString("screen", fullscreen_toggle.isOn.ToString());
     }
 
     public void Add_mouse_sens_listener(UnityAction action)

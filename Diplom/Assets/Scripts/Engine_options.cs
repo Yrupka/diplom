@@ -62,6 +62,14 @@ public class Engine_options : MonoBehaviour
         if (string.IsNullOrEmpty(input_l.text)) input_l.text = "1";
         if (string.IsNullOrEmpty(input_t.text)) input_t.text = "0";
 
+        float lever = float.Parse(input_l.text, culture);
+        if (lever == 0)
+            lever = 1;
+
+        options.fuel_amount = int.Parse(input_m.text, culture);
+        options.lever_length = lever;
+        options.heat_time = int.Parse(input_t.text);
+
         Save();
     }
 
@@ -100,13 +108,14 @@ public class Engine_options : MonoBehaviour
     // обновить график по номеру (0-момента, 1-мощности, 2-расхода, 3 - обновить все)
     private void Graph_update(int graph_num) 
     {
-        float lever = float.Parse(input_l.text);
+        if (string.IsNullOrEmpty(input_l.text)) input_l.text = "1";
+        float lever = float.Parse(input_l.text, culture);
         if (lever == 0)
             lever = 1;
-        options = new Engine_options_class(int.Parse(input_m.text, culture),
-            lever,
-            int.Parse(input_t.text),
-            (int)input_inter.value);
+        options.fuel_amount = int.Parse(input_m.text, culture);
+        options.lever_length = lever;
+        options.heat_time = int.Parse(input_t.text);
+        options.interpolation = (int)input_inter.value;
         options.Set_rpms(scroll.GetItems());
         options.hints = hint_texts;
         if (options.rpms.Count != 0)
