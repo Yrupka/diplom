@@ -4,16 +4,12 @@ using UnityEngine.UI;
 
 public class UI_names : MonoBehaviour
 {
-    [SerializeField]
-    private Transform cam_obj;
-    [SerializeField]
-    private Transform text_prefab;
-    [SerializeField]
-    private Transform line_prefab;
+    public Transform cam_obj;
+    public Transform text_prefab;
+    public Transform line_prefab;
 
     private List<Transform> clones_text;
     private List<Transform> clones_line;
-
     public List<Transform> objects;
     public List<string> names;
 

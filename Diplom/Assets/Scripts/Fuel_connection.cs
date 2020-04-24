@@ -2,10 +2,8 @@
 
 public class Fuel_connection : MonoBehaviour
 {
-    [SerializeField]
-    private Engine_controller engine_controller;
-    [SerializeField]
-    private Fuel_controller fuel_controller;
+    public Engine_controller engine_controller;
+    public Fuel_controller fuel_controller;
     private float fuel_taken;
 
     private void Awake()

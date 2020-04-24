@@ -4,17 +4,15 @@ using UnityEngine.UI;
 
 public class Graph_script : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject dot;
-
-    [SerializeField]
-    private Sprite circle_sprite;
     private RectTransform graph_container;
     private RectTransform label_template_x;
     private RectTransform label_template_y;
     private RectTransform dash_template_x;
     private RectTransform dash_template_y;
     private List<GameObject> game_object_list;
+
+    public GameObject dot;
+    public Sprite circle_sprite;
 
     private void Awake()
     {

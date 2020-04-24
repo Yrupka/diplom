@@ -2,10 +2,8 @@
 
 public class Engine_cam : MonoBehaviour
 {
-    [SerializeField]
-    private Texture2D cursor_texture;
-    [SerializeField]
-    private Menu_options options;
+    public Texture2D cursor_texture;
+    public Menu_options options;
     private Vector3 transfer;
 
     private float speed;

@@ -5,11 +5,6 @@ using UnityEngine.Events;
 
 public class Engine_controller : MonoBehaviour
 {
-    [SerializeField]
-    private Animator anim;
-    [SerializeField]
-    private AudioClip[] engine_sounds;
-    private AudioSource sound_source;
     private Gauge gauge_rpm;
     private Gauge gauge_p;
     private Rpm_switch rpm_switch;
@@ -17,6 +12,9 @@ public class Engine_controller : MonoBehaviour
     private Info_system info_system;
     private Temperature temperature;
     private Engine_options_class options;
+    private AudioSource sound_source;
+    public Animator anim;
+    public AudioClip[] engine_sounds;
 
     private UnityAction action_start;
     private UnityAction action_update;
@@ -33,7 +31,7 @@ public class Engine_controller : MonoBehaviour
 
     private void Start()
     {
-        if (options.rpms.Count != 0)
+        if (options != null)
         {
             engine_state = false;
             rpm = 0;

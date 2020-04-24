@@ -4,6 +4,10 @@ using UnityEngine.UI;
 
 public class Engine_options : MonoBehaviour
 {
+    private Scroll_controller scroll;
+    private Engine_options_class options;
+    private Graph_options graph;
+
     private InputField input_m; // масса добавляемого топлива
     private InputField input_l; // длина рычага тормозящего устройства
     private InputField input_t; // время нагрева двигателя до рабочей температуры
@@ -11,9 +15,6 @@ public class Engine_options : MonoBehaviour
     private Dropdown hints_dropdown; // список подсказок
     private Text hints_condition;
     private InputField input_hints; // подсказки
-    private Scroll_controller scroll;
-    private Engine_options_class options;
-    private Graph_options graph;
     // для разшения формата float с точкой вместо запятой
     System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
 
@@ -83,14 +84,17 @@ public class Engine_options : MonoBehaviour
     private void Load()
     {
         options = Save_controller.Load_engine_options();
-        hint_texts = options.hints;
-        input_m.text = options.fuel_amount.ToString(culture);
-        input_l.text = options.lever_length.ToString(culture);
-        input_t.text = options.heat_time.ToString(culture);
-        scroll.AddMany(options.Get_rpms());
-        input_inter.value = options.interpolation;
-        input_hints.text = hint_texts[hints_dropdown.value];
-        hints_condition.text = conditions[hints_dropdown.value];
+        if (options != null)
+        {
+            hint_texts = options.hints;
+            input_m.text = options.fuel_amount.ToString(culture);
+            input_l.text = options.lever_length.ToString(culture);
+            input_t.text = options.heat_time.ToString(culture);
+            scroll.AddMany(options.Get_rpms());
+            input_inter.value = options.interpolation;
+            input_hints.text = hint_texts[hints_dropdown.value];
+            hints_condition.text = conditions[hints_dropdown.value];
+        }
     }
 
     // обновить график по номеру (0-момента, 1-мощности, 2-расхода, 3 - обновить все)
@@ -105,7 +109,11 @@ public class Engine_options : MonoBehaviour
             (int)input_inter.value);
         options.Set_rpms(scroll.GetItems());
         options.hints = hint_texts;
-        graph.Calculate_graphs(options, graph_num);
+        if (options.rpms.Count != 0)
+        {
+            graph.Calculate_graphs(options, graph_num);
+            options.rpms.Sort((a, b) => a.rpm.CompareTo(b.rpm));
+        }
         options.max_moment = graph.Get_max_moment();
     }
 }

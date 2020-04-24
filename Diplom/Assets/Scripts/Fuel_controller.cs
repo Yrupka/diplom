@@ -116,13 +116,11 @@ public class Fuel_controller : MonoBehaviour
     {
         int state_count = 0;
         if (glass_on_scale)
-        {
             state_count++;
-            if (fuel_pomp.State_info())
-                state_count++;
-            if (engine_in_work)
-                state_count++;
-        }
+        if (fuel_pomp.State_info())
+            state_count++;
+        if (engine_in_work && state_count == 2)
+            state_count++;
         return state_count;
     }
 

@@ -6,8 +6,6 @@ using UnityEngine.Audio;
 
 public class Menu_options : MonoBehaviour
 {
-    [SerializeField]
-    private AudioMixerGroup audio_mixer;
     private Slider mouse_slider;
     private InputField mouse_input;
     private Dropdown resolutions;
@@ -15,6 +13,8 @@ public class Menu_options : MonoBehaviour
     private Slider sound_slider;
     private InputField sound_input;
     private System.Globalization.CultureInfo culture;
+    public AudioMixerGroup audio_mixer;
+
     private UnityAction action_mouse;
 
     private float mouse_sens_value;

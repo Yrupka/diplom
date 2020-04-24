@@ -1,13 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class UI_scale : MonoBehaviour
 {
-
-    [SerializeField]
-    private Scale scale;
+    public Scale scale;
 
     private Text weight_value;
    

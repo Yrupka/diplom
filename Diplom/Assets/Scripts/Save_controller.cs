@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -27,6 +26,10 @@ public static class Save_controller
             return data;
         }
         else
-            return null;
+        {
+            Engine_options_class data = new Engine_options_class(1, 1, 1, 1);
+            Save_engine_options(data);
+            return data;
+        }
     }
 }

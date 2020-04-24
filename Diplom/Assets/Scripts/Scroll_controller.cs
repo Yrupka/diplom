@@ -5,17 +5,17 @@ using UnityEngine.UI;
 
 public class Scroll_controller : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject prefab;
     private Button add_button;
     private Button del_button;
     private RectTransform content;
     private List<GameObject> items_list; // хранение ячеек на сцене
+    public GameObject prefab;
+
     private UnityAction action_first;
     private UnityAction action_second;
     private UnityAction action_third;
 
-    private int size = 0;
+    private int size;
     public string info1;
     public string info2;
     public string info3;

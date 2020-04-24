@@ -3,8 +3,7 @@ using UnityEngine.UI;
 
 public class UI_hints : MonoBehaviour
 {
-    [SerializeField]
-    private Fuel_controller fuel_controller;
+    public Fuel_controller fuel_controller;
 
     private Text text_info;
     private RectTransform background;

@@ -2,8 +2,7 @@
 
 public class Gauge : MonoBehaviour
 {
-    [SerializeField]
-    private string value_name;
+    public string value_name;
 
     private const float max_speed_angle = -126; // угол максимального значения скорости
     private const float min_speed_angle = 126; // угол минимального значения скорости
