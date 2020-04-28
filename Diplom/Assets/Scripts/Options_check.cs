@@ -13,13 +13,18 @@ public class Options_check : MonoBehaviour
         Transform options_empty = transform.Find("Options_empty");
         options_empty.Find("Button").GetComponent<Button>().onClick.AddListener(Main_menu);
         Engine_options_class options = Save_controller.Load_engine_options();
-        if (options.rpms.Count == 0)
+        if (options == null)
             options_empty.gameObject.SetActive(true);
         else
         {
-            engine_controller.Load_options(options);
-            item_gas_tank.Load_options(options.fuel_amount);
-            hints.Load_options(options.hints);
+            if (options.rpms.Count == 0)
+                options_empty.gameObject.SetActive(true);
+            else
+            {
+                engine_controller.Load_options(options);
+                item_gas_tank.Load_options(options.fuel_amount);
+                hints.Load_options(options.hints);
+            }
         }
     }
 

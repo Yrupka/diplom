@@ -81,9 +81,9 @@ public class Graph_script : MonoBehaviour
         return game_object;
     }
 
-    public void Show_graph(List<float> value_list, List<int> label_x, int split_dot_number)
+    public void Show_graph(List<int> label_x, List<float> label_y, int split_dot_number)
     {
-        int max_visible = value_list.Count;
+        int max_visible = label_y.Count;
 
         foreach (GameObject gameObject in game_object_list)
         {
@@ -94,7 +94,7 @@ public class Graph_script : MonoBehaviour
         float graph_width = graph_container.sizeDelta.x;
         float graph_height = graph_container.sizeDelta.y;
 
-        float max_y = Mathf.Max(value_list.ToArray()) + 1f;
+        float max_y = Mathf.Max(label_y.ToArray()) + 1f;
 
         float size_x = graph_width / (max_visible + 1);
 
@@ -102,7 +102,7 @@ public class Graph_script : MonoBehaviour
         for (int i = 0, red_dot = split_dot_number; i < max_visible; i++, red_dot++)
         {
             float position_x = size_x + i * size_x;
-            float position_y = value_list[i] / max_y * graph_height;
+            float position_y = label_y[i] / max_y * graph_height;
 
             GameObject circle_go;
             Color color = Color.white;
@@ -114,7 +114,7 @@ public class Graph_script : MonoBehaviour
             }
             circle_go = Instantiate(dot);
             circle_go.GetComponent<Red_dot>().Set_data(new Vector2(position_x, position_y),
-                    graph_container, label_x[i], value_list[i], color);
+                    graph_container, label_x[i], label_y[i], color);
             circle_go.transform.SetAsFirstSibling();
             game_object_list.Add(circle_go);
 

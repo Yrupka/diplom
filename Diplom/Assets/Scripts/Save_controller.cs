@@ -26,10 +26,6 @@ public static class Save_controller
             return data;
         }
         else
-        {
-            Engine_options_class data = new Engine_options_class(1, 1, 1, 1);
-            Save_engine_options(data);
-            return data;
-        }
+            return null;
     }
 }

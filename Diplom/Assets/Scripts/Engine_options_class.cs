@@ -27,6 +27,17 @@ public class Engine_options_class
     public string[] hints;
     public List<struct_rpms> rpms;
 
+    public Engine_options_class()
+    {
+        fuel_amount = 0;
+        heat_time = 0;
+        interpolation = 0;
+        lever_length = 1f;
+        max_moment = 0f;
+        hints = new string[4];
+        rpms = new List<struct_rpms>();
+    }
+
     public Engine_options_class(int fuel_amount, float lever_length, int heat_time, int interpolation)
     {
         this.fuel_amount = fuel_amount;

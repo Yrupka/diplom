@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class Scroll_controller : MonoBehaviour
+public class Table_options : MonoBehaviour
 {
     private Button add_button;
     private Button del_button;

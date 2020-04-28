@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class Engine_options : MonoBehaviour
 {
-    private Scroll_controller scroll;
+    private Table_options scroll;
     private Engine_options_class options;
     private Graph_options graph;
 
@@ -23,7 +23,7 @@ public class Engine_options : MonoBehaviour
 
     private void Awake() // нахождение всех полей
     {
-        scroll = transform.Find("Scroll").GetComponent<Scroll_controller>();
+        scroll = transform.Find("Scroll").GetComponent<Table_options>();
         scroll.Add_listener_update_first(() => Graph_update(0));
         scroll.Add_listener_update_second(() => Graph_update(1));
         scroll.Add_listener_update_third(() => Graph_update(2));
@@ -58,8 +58,8 @@ public class Engine_options : MonoBehaviour
 
     private void Confirm_button() // нажата кнопка сохранить
     {
-        if (string.IsNullOrEmpty(input_m.text)) input_m.text = "1";
-        if (string.IsNullOrEmpty(input_l.text)) input_l.text = "1";
+        if (string.IsNullOrEmpty(input_m.text)) input_m.text = "0";
+        if (string.IsNullOrEmpty(input_l.text)) input_l.text = "0";
         if (string.IsNullOrEmpty(input_t.text)) input_t.text = "0";
 
         float lever = float.Parse(input_l.text, culture);
@@ -69,6 +69,8 @@ public class Engine_options : MonoBehaviour
         options.fuel_amount = int.Parse(input_m.text, culture);
         options.lever_length = lever;
         options.heat_time = int.Parse(input_t.text);
+        options.hints = hint_texts;
+        options.max_moment = graph.Get_max_moment();
 
         Save();
     }
@@ -102,27 +104,21 @@ public class Engine_options : MonoBehaviour
             input_inter.value = options.interpolation;
             input_hints.text = hint_texts[hints_dropdown.value];
             hints_condition.text = conditions[hints_dropdown.value];
+            Graph_update(3);
         }
+        else
+            options = new Engine_options_class();
     }
 
     // обновить график по номеру (0-момента, 1-мощности, 2-расхода, 3 - обновить все)
     private void Graph_update(int graph_num) 
     {
-        if (string.IsNullOrEmpty(input_l.text)) input_l.text = "1";
-        float lever = float.Parse(input_l.text, culture);
-        if (lever == 0)
-            lever = 1;
-        options.fuel_amount = int.Parse(input_m.text, culture);
-        options.lever_length = lever;
-        options.heat_time = int.Parse(input_t.text);
         options.interpolation = (int)input_inter.value;
         options.Set_rpms(scroll.GetItems());
-        options.hints = hint_texts;
         if (options.rpms.Count != 0)
         {
             graph.Calculate_graphs(options, graph_num);
             options.rpms.Sort((a, b) => a.rpm.CompareTo(b.rpm));
         }
-        options.max_moment = graph.Get_max_moment();
     }
 }

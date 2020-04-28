@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Rpm_slider : MonoBehaviour
+public class Rpm_slider : Item_highligh
 {
     private float val;
     private float sensitivity;
