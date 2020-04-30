@@ -26,7 +26,6 @@ public class Engine_controller : MonoBehaviour
     private List<float> interpolated_consumtions;
     private List<float> interpolated_moments;
     private bool engine_state;
-    private float load_procent;
     private bool load_state;
     private int rpm;
     private int rpm_old;
@@ -50,7 +49,6 @@ public class Engine_controller : MonoBehaviour
             engine_state = false;
             rpm = 0;
             rpm_old = 0;
-            load_procent = 0f;
             load_state = false;
 
             sound_source = GetComponent<AudioSource>();
@@ -81,9 +79,9 @@ public class Engine_controller : MonoBehaviour
         {
             if (fuel_weight > 0)
             {
-                load_procent = rpm_slider.Get_procent() - load_switch.Get_procent();
+                float load_procent = rpm_slider.Get_procent() - load_switch.Get_procent();
                 rpm = (int)Mathf.Lerp(1000f, 7000f, load_procent);
-                fuel_weight -= Interpolate_fuel(rpm_old) * temperature.Penalty();
+                fuel_weight -= Interpolate(rpm_old, interpolated_consumtions) * temperature.Penalty();
 
                 sound_source.pitch = rpm_old / 2000f;
                 sound_source.volume = Mathf.InverseLerp(1000f, 7000f, rpm) + 0.3f;
@@ -110,11 +108,11 @@ public class Engine_controller : MonoBehaviour
         }
         rpm_old = (int)Mathf.Lerp(rpm_old, rpm, Time.deltaTime * 3f);
         gauge_rpm.Value(rpm_old);
-        gauge_p.Value(Interpolate_force(rpm_old));
+        gauge_p.Value(Interpolate(rpm_old, interpolated_moments));
         gauge_load.Value(load_switch.Get_procent() * options.max_moment / options.lever_length);
     }
 
-    private float Interpolate_force(int rpm_val)
+    private float Interpolate(int rpm_val, List<float> info)
     {
         int index = interpolated_rpms.BinarySearch(rpm_val);
         if (index == -1)
@@ -126,28 +124,10 @@ public class Engine_controller : MonoBehaviour
             index = ~index;
             float procent = Mathf.InverseLerp(
                 interpolated_rpms[index - 1], interpolated_rpms[index], rpm_val);
-            value = Mathf.Lerp(interpolated_moments[index - 1], interpolated_moments[index], procent);
+            value = Mathf.Lerp(info[index - 1], info[index], procent);
         }
         else
-            value = interpolated_moments[index];
-        return value;
-    }
-    private float Interpolate_fuel(int rpm_val)
-    {
-        int index = interpolated_rpms.BinarySearch(rpm_val);
-        if (index == -1)
-            return 0f;
-
-        float value = 0f;
-        if (index < 0)
-        {
-            index = ~index;
-            float procent = Mathf.InverseLerp(
-                interpolated_rpms[index - 1], interpolated_rpms[index], rpm_val);
-            value = Mathf.Lerp(interpolated_consumtions[index - 1], interpolated_consumtions[index], procent);
-        }
-        else
-            value = interpolated_consumtions[index];
+            value = info[index];
         return value;
     }
 

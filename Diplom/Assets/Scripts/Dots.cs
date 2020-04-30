@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Red_dot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class Dots : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private Transform tooltip; 
 

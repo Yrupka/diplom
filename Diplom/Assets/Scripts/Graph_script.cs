@@ -12,7 +12,6 @@ public class Graph_script : MonoBehaviour
     private List<GameObject> game_object_list;
 
     public GameObject dot;
-    public Sprite circle_sprite;
 
     private void Awake()
     {
@@ -113,7 +112,7 @@ public class Graph_script : MonoBehaviour
                 red_dot = 0;
             }
             circle_go = Instantiate(dot);
-            circle_go.GetComponent<Red_dot>().Set_data(new Vector2(position_x, position_y),
+            circle_go.GetComponent<Dots>().Set_data(new Vector2(position_x, position_y),
                     graph_container, label_x[i], label_y[i], color);
             circle_go.transform.SetAsFirstSibling();
             game_object_list.Add(circle_go);

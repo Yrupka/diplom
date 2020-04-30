@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class Table_options : MonoBehaviour
 {
-    private Button add_button;
-    private Button del_button;
     private RectTransform content;
     private List<GameObject> items_list; // хранение ячеек на сцене
     public GameObject prefab;
@@ -15,7 +13,6 @@ public class Table_options : MonoBehaviour
     private UnityAction action_second;
     private UnityAction action_third;
 
-    private int size;
     public string info1;
     public string info2;
     public string info3;
@@ -25,17 +22,16 @@ public class Table_options : MonoBehaviour
     {
         Transform window = transform.Find("Scroll_window");
         content = window.Find("Content").GetComponent<RectTransform>();
-        add_button = transform.Find("Add_btn").GetComponent<Button>();
-        add_button.onClick.AddListener(() => AddItem());
-        del_button = transform.Find("Del_btn").GetComponent<Button>();
-        del_button.onClick.AddListener(() => DeleteItem());
+        transform.Find("Add_btn").GetComponent<Button>()
+            .onClick.AddListener(() => AddItem());
+        transform.Find("Del_btn").GetComponent<Button>()
+            .onClick.AddListener(() => DeleteItem());
         transform.Find("Info1").GetComponent<Text>().text = info1;
         transform.Find("Info2").GetComponent<Text>().text = info2;
         transform.Find("Info3").GetComponent<Text>().text = info3;
         transform.Find("Info4").GetComponent<Text>().text = info4;
 
         items_list = new List<GameObject>();
-        size = 0;
     }
 
     private void DeleteAll() // удаление всех объектов списка
@@ -43,22 +39,21 @@ public class Table_options : MonoBehaviour
         foreach (GameObject go in items_list)
             Destroy(go);
         items_list = new List<GameObject>();
-        size = 0;
     }
 
     private void AddItem()
     {
-        Item item = new Item((size + 1).ToString());
+        Item item = new Item((items_list.Count + 1).ToString());
         CreateItem(item);
     }
 
     private void DeleteItem()
     {
-        if (size != 0)
+        int index = items_list.Count;
+        if (index != 0)
         {
-            Destroy(items_list[size - 1]);
-            items_list.RemoveAt(size - 1);
-            size--;
+            Destroy(items_list[index - 1]);
+            items_list.RemoveAt(index - 1);
         }
     }
 
@@ -75,7 +70,6 @@ public class Table_options : MonoBehaviour
         model.input3.text = item.third;
         model.input3.onEndEdit.AddListener((val) => action_third());
         items_list.Add(instanse);
-        size++;
     }
 
     public void AddMany(string[,] items)
@@ -118,8 +112,7 @@ public class Table_options : MonoBehaviour
         action_third += action;
     }
 
-    [System.Serializable]
-    public class ItemModel
+    public struct ItemModel
     {
         public Text num;
         public InputField input1;
@@ -135,8 +128,7 @@ public class Table_options : MonoBehaviour
         }
     }
 
-    [System.Serializable]
-    public class Item
+    public struct Item
     {
         public string number;
         public string first;
