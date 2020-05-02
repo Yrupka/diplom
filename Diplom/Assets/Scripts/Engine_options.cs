@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Engine_options : MonoBehaviour
 {
     private Table_options scroll;
     private Engine_options_class options;
+    private Engine_options_class options_old;
     private Graph_options graph;
 
     private InputField input_m; // масса добавляемого топлива
@@ -15,8 +17,10 @@ public class Engine_options : MonoBehaviour
     private Dropdown hints_dropdown; // список подсказок
     private Text hints_condition;
     private InputField input_hints; // подсказки
+    private InputField input_name; // имя профиля
     // для разшения формата float с точкой вместо запятой
     System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+    private UnityAction action_close;
 
     private string[] hint_texts;
     private string[] conditions;
@@ -27,33 +31,36 @@ public class Engine_options : MonoBehaviour
         scroll.Add_listener_update_first(() => Graph_update(0));
         scroll.Add_listener_update_second(() => Graph_update(1));
         scroll.Add_listener_update_third(() => Graph_update(2));
-        input_m = transform.Find("Input1").GetComponent<InputField>();
-        input_l = transform.Find("Input2").GetComponent<InputField>();
-        input_t = transform.Find("Input3").GetComponent<InputField>();
-        input_inter = transform.Find("Input4").GetComponent<Slider>();
+        input_m = transform.Find("Input_1").GetComponent<InputField>();
+        input_l = transform.Find("Input_2").GetComponent<InputField>();
+        input_t = transform.Find("Input_3").GetComponent<InputField>();
+        input_inter = transform.Find("Input_4").GetComponent<Slider>();
         // изменение значения слайдера приведет к изменению цифры в окошке
         input_inter.onValueChanged.AddListener((value) =>
-            transform.Find("Input4_text").GetComponent<InputField>().text = value.ToString());
+            transform.Find("Input_text_4").GetComponent<InputField>().text = value.ToString());
         // обновить все графики, если было изменено значение интерполяции
         input_inter.onValueChanged.AddListener((value) => Graph_update(3));
-        input_hints = transform.Find("Input5").GetComponent<InputField>();
+        input_hints = transform.Find("Input_5").GetComponent<InputField>();
         input_hints.onEndEdit.AddListener(Hints_update);
-        hints_dropdown = transform.Find("Dropdown5").GetComponent<Dropdown>();
+        input_name = transform.Find("Input_6").GetComponent<InputField>();
+        hints_dropdown = transform.Find("Dropdown_5").GetComponent<Dropdown>();
         hints_dropdown.onValueChanged.AddListener(Dropdown_updated);
         hints_dropdown.AddOptions(new List<string>()
             { "Подсказка 1", "Подсказка 2", "Подсказка 3", "Подсказка 4"});
-        hints_condition = transform.Find("Text5_condition").GetComponent<Text>();
+        hints_condition = transform.Find("Text_condition_5").GetComponent<Text>();
         graph = transform.Find("Graph").GetComponent<Graph_options>();
         transform.Find("Save_button").GetComponent<Button>().onClick.AddListener(Confirm_button);
         transform.Find("Load_button").GetComponent<Button>().onClick.AddListener(Load);
+        transform.Find("Exit_button").GetComponent<Button>().onClick.AddListener(
+            () => transform.parent.parent.gameObject.SetActive(false));
         hint_texts = new string[4];
         conditions = new string[4] {"Вход в лабораторию", "Тара на весах",
             "Топливоприемник опущен", "Двигатель работает"};
     }
 
-    private void Start()
+    private void OnDisable()
     {
-        Load();
+        action_close?.Invoke();
     }
 
     private void Confirm_button() // нажата кнопка сохранить
@@ -61,11 +68,12 @@ public class Engine_options : MonoBehaviour
         if (string.IsNullOrEmpty(input_m.text)) input_m.text = "0";
         if (string.IsNullOrEmpty(input_l.text)) input_l.text = "0";
         if (string.IsNullOrEmpty(input_t.text)) input_t.text = "0";
+        if (string.IsNullOrWhiteSpace(input_name.text)) input_name.text = "Noname";
 
+        options.profile_name = input_name.text;
         float lever = float.Parse(input_l.text, culture);
         if (lever == 0)
             lever = 1;
-
         options.fuel_amount = int.Parse(input_m.text, culture);
         options.lever_length = lever;
         options.heat_time = int.Parse(input_t.text);
@@ -88,26 +96,24 @@ public class Engine_options : MonoBehaviour
 
     private void Save()
     {
-        Save_controller.Save_engine_options(options);
+        options_old = options;
     }
 
     private void Load()
     {
-        options = Save_controller.Load_engine_options();
-        if (options != null)
-        {
-            hint_texts = options.hints;
-            input_m.text = options.fuel_amount.ToString(culture);
-            input_l.text = options.lever_length.ToString(culture);
-            input_t.text = options.heat_time.ToString(culture);
-            scroll.AddMany(options.Get_rpms());
-            input_inter.value = options.interpolation;
-            input_hints.text = hint_texts[hints_dropdown.value];
-            hints_condition.text = conditions[hints_dropdown.value];
-            Graph_update(3);
-        }
-        else
-            options = new Engine_options_class();
+        options = options_old;
+        graph.Clear_graphs();
+
+        hint_texts = options.hints;
+        input_name.text = options.profile_name;
+        input_m.text = options.fuel_amount.ToString(culture);
+        input_l.text = options.lever_length.ToString(culture);
+        input_t.text = options.heat_time.ToString(culture);
+        scroll.AddMany(options.Get_rpms());
+        input_inter.value = options.interpolation;
+        input_hints.text = hint_texts[hints_dropdown.value];
+        hints_condition.text = conditions[hints_dropdown.value];
+        Graph_update(3);
     }
 
     // обновить график по номеру (0-момента, 1-мощности, 2-расхода, 3 - обновить все)
@@ -117,8 +123,25 @@ public class Engine_options : MonoBehaviour
         options.Set_rpms(scroll.GetItems());
         if (options.rpms.Count != 0)
         {
-            graph.Calculate_graphs(options, graph_num);
             options.rpms.Sort((a, b) => a.rpm.CompareTo(b.rpm));
+            graph.Calculate_graphs(options, graph_num);
         }
+    }
+
+    public void Set_profile(Engine_options_class profile)
+    {
+        options_old = profile;
+        options = profile;
+        Load();
+    }
+
+    public Engine_options_class Get_profile()
+    {
+        return options_old;
+    }
+
+    public void Add_listener_closed(UnityAction action)
+    {
+        action_close += action;
     }
 }

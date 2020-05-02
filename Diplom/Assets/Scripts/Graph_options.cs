@@ -87,6 +87,13 @@ public class Graph_options : MonoBehaviour
         Graph_change(dropdown.value);
     }
 
+    public void Clear_graphs()
+    {
+        dropdown.value = 0;
+        for (int i = 0; i < 4; i++)
+            graph_data[i].Clear();
+    }
+
     public float Get_max_moment()
     {
         return Mathf.Max(graph_data[0].ToArray());

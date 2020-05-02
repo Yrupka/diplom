@@ -19,6 +19,7 @@ public class Engine_options_class
         }
     }
 
+    public string profile_name;
     public int fuel_amount;
     public int heat_time;
     public int interpolation;
@@ -27,23 +28,14 @@ public class Engine_options_class
     public string[] hints;
     public List<struct_rpms> rpms;
 
-    public Engine_options_class()
+    public Engine_options_class(string name)
     {
+        profile_name = name;
         fuel_amount = 0;
         heat_time = 0;
         interpolation = 0;
         lever_length = 1f;
         max_moment = 0f;
-        hints = new string[4];
-        rpms = new List<struct_rpms>();
-    }
-
-    public Engine_options_class(int fuel_amount, float lever_length, int heat_time, int interpolation)
-    {
-        this.fuel_amount = fuel_amount;
-        this.lever_length = lever_length;
-        this.heat_time = heat_time;
-        this.interpolation = interpolation;
         hints = new string[4];
         rpms = new List<struct_rpms>();
     }

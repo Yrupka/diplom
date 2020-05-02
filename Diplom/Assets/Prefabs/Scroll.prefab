@@ -93,6 +93,8 @@ MonoBehaviour:
   prefab: {fileID: 4903617124311998217, guid: 30ca7d4ff0c63004fa6288448aaf4ee8, type: 3}
   info1: vfd
   info2: dfgdg
+  info3: 
+  info4: 
 --- !u!1 &1790038383861079222
 GameObject:
   m_ObjectHideFlags: 0

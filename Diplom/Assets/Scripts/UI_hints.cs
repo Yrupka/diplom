@@ -20,7 +20,7 @@ public class UI_hints : MonoBehaviour
     private void Text_update()
     {
         text_info.text = texts[fuel_controller.State()];
-        background.sizeDelta = new Vector2(200, text_info.preferredHeight + 5);
+        background.sizeDelta = new Vector2(200, text_info.preferredHeight + 10);
     }
 
     public void Load_options(string[] loaded_options) // получить загруженные данные

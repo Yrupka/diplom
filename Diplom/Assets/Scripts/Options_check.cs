@@ -12,7 +12,7 @@ public class Options_check : MonoBehaviour
     {
         Transform options_empty = transform.Find("Options_empty");
         options_empty.Find("Button").GetComponent<Button>().onClick.AddListener(Main_menu);
-        Engine_options_class options = Save_controller.Load_engine_options();
+        Engine_options_class options = Save_controller.Load_one_profile();
         if (options == null)
             options_empty.gameObject.SetActive(true);
         else
