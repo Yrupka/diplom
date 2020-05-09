@@ -80,7 +80,7 @@ public class Engine_controller : MonoBehaviour
             if (fuel_weight > 0)
             {
                 float load_procent = rpm_slider.Get_procent() - load_switch.Get_procent();
-                rpm = (int)Mathf.Lerp(1000f, 7000f, load_procent);
+                rpm = (int)Mathf.Lerp(600f, 7000f, load_procent);
                 fuel_weight -= Interpolate(rpm_old, interpolated_consumtions) * temperature.Penalty();
 
                 sound_source.pitch = rpm_old / 2000f;

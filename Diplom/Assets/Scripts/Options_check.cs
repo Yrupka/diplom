@@ -6,7 +6,7 @@ public class Options_check : MonoBehaviour
 {
     public Engine_controller engine_controller;
     public Item_gas_tank item_gas_tank;
-    public UI_hints hints;
+    public Engine_menu menu;
 
     private void Awake()
     {
@@ -23,7 +23,7 @@ public class Options_check : MonoBehaviour
             {
                 engine_controller.Load_options(options);
                 item_gas_tank.Load_options(options.fuel_amount);
-                hints.Load_options(options.hints);
+                menu.Load_options(options.hints, options.profile_show, options.car_name, options.engine_name);
             }
         }
     }

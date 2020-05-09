@@ -17,7 +17,9 @@ public class Engine_options : MonoBehaviour
     private Dropdown hints_dropdown; // список подсказок
     private Text hints_condition;
     private InputField input_hints; // подсказки
-    private InputField input_name; // имя профиля
+    private InputField input_car; // имя двигателя
+    private InputField input_eng; // имя машины
+    private Toggle toggle_profile; // показывать название профиля или нет
     // для разшения формата float с точкой вместо запятой
     System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
     private UnityAction action_close;
@@ -42,7 +44,9 @@ public class Engine_options : MonoBehaviour
         input_inter.onValueChanged.AddListener((value) => Graph_update(3));
         input_hints = transform.Find("Input_5").GetComponent<InputField>();
         input_hints.onEndEdit.AddListener(Hints_update);
-        input_name = transform.Find("Input_6").GetComponent<InputField>();
+        input_car = transform.Find("Input_6").GetComponent<InputField>();
+        input_eng = transform.Find("Input_7").GetComponent<InputField>();
+        toggle_profile = transform.Find("Input_8_toggle").GetComponent<Toggle>();
         hints_dropdown = transform.Find("Dropdown_5").GetComponent<Dropdown>();
         hints_dropdown.onValueChanged.AddListener(Dropdown_updated);
         hints_dropdown.AddOptions(new List<string>()
@@ -68,9 +72,12 @@ public class Engine_options : MonoBehaviour
         if (string.IsNullOrEmpty(input_m.text)) input_m.text = "0";
         if (string.IsNullOrEmpty(input_l.text)) input_l.text = "0";
         if (string.IsNullOrEmpty(input_t.text)) input_t.text = "0";
-        if (string.IsNullOrWhiteSpace(input_name.text)) input_name.text = "Noname";
+        if (string.IsNullOrWhiteSpace(input_car.text)) input_car.text = "м1";
+        if (string.IsNullOrWhiteSpace(input_eng.text)) input_eng.text = "д1";
 
-        options.profile_name = input_name.text;
+        options.car_name = input_car.text;
+        options.engine_name = input_eng.text;
+        options.profile_show = toggle_profile.isOn;
         float lever = float.Parse(input_l.text, culture);
         if (lever == 0)
             lever = 1;
@@ -104,8 +111,11 @@ public class Engine_options : MonoBehaviour
         options = options_old;
         graph.Clear_graphs();
 
+        hints_dropdown.value = 0;
         hint_texts = options.hints;
-        input_name.text = options.profile_name;
+        input_car.text = options.car_name;
+        input_eng.text = options.engine_name;
+        toggle_profile.isOn = options.profile_show;
         input_m.text = options.fuel_amount.ToString(culture);
         input_l.text = options.lever_length.ToString(culture);
         input_t.text = options.heat_time.ToString(culture);

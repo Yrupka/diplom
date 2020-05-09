@@ -17,7 +17,6 @@ public class UI_names : MonoBehaviour
     {
         clones_text = new List<Transform>();
         clones_line = new List<Transform>();
-        GetComponent<Toggle>().onValueChanged.AddListener(Toggle_clicked);
         Names_create();
     }
 
@@ -29,14 +28,6 @@ public class UI_names : MonoBehaviour
             clones_line[i].LookAt(cam_obj);
             clones_line[i].localEulerAngles = Vector3.Scale(clones_line[i].localEulerAngles, Vector3.up);
         }
-    }
-
-    private void Toggle_clicked(bool val)
-    {
-        if (val)
-            Names_create();
-        else
-            Names_delete();
     }
 
     private void Names_create()
@@ -80,5 +71,13 @@ public class UI_names : MonoBehaviour
         }
         clones_text.Clear();
         clones_line.Clear();
+    }
+
+    public void Clicked(bool state)
+    {
+        if (state)
+            Names_create();
+        else
+            Names_delete();
     }
 }

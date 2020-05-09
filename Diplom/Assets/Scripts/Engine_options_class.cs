@@ -19,24 +19,28 @@ public class Engine_options_class
         }
     }
 
-    public string profile_name;
+    public string engine_name;
+    public string car_name;
+    public string[] hints;
     public int fuel_amount;
     public int heat_time;
     public int interpolation;
     public float lever_length;
     public float max_moment;
-    public string[] hints;
+    public bool profile_show;
     public List<struct_rpms> rpms;
 
-    public Engine_options_class(string name)
+    public Engine_options_class(string engine, string car)
     {
-        profile_name = name;
+        engine_name = engine;
+        car_name = car;
+        hints = new string[4];
         fuel_amount = 0;
         heat_time = 0;
         interpolation = 0;
         lever_length = 1f;
         max_moment = 0f;
-        hints = new string[4];
+        profile_show = true;
         rpms = new List<struct_rpms>();
     }
 
