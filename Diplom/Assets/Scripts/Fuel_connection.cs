@@ -2,7 +2,7 @@
 
 public class Fuel_connection : MonoBehaviour
 {
-    public Engine_controller engine_controller;
+    public Stand_controller engine_controller;
     public Fuel_controller fuel_controller;
     private float fuel_taken;
 

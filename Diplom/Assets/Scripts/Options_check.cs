@@ -4,15 +4,15 @@ using UnityEngine.UI;
 
 public class Options_check : MonoBehaviour
 {
-    public Engine_controller engine_controller;
+    public Stand_controller engine_controller;
     public Item_gas_tank item_gas_tank;
-    public Engine_menu menu;
+    public Menu_interactive menu;
 
     private void Awake()
     {
         Transform options_empty = transform.Find("Options_empty");
         options_empty.Find("Button").GetComponent<Button>().onClick.AddListener(Main_menu);
-        Engine_options_class options = Save_controller.Load_one_profile();
+        Engine_options options = File_controller.Load_one_profile();
         if (options == null)
             options_empty.gameObject.SetActive(true);
         else

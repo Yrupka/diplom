@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
-public class UI_scale : MonoBehaviour
+public class UI_scale : UI_grab
 {
     public Scale scale;
 

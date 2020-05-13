@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_timer : MonoBehaviour
+public class UI_timer : UI_grab
 {
     private Text text_value;
     private bool state;

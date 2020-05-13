@@ -1,13 +1,11 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
-public class UI_texts : MonoBehaviour
+public class UI_texts : UI_grab
 {
     public Fuel_controller fuel_controller;
 
     private Text hint_info;
     private Text profile_info;
-    private RectTransform background;
 
     private string[] texts;
 
