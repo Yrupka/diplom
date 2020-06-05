@@ -35,39 +35,23 @@ public class Stand_controller : MonoBehaviour
     {
         if (options != null)
         {
-            interpolated_rpms = Calculation_formulas.Interpolated_x(
-                options.Get_list_rpm(), options.interpolation);
-            interpolated_moments = Calculation_formulas.Interpolated_y(
-                options.Get_list_rpm(), options.Get_list_moment(), interpolated_rpms);
-            for (int i = 0; i < interpolated_moments.Count; i++)
-                interpolated_moments[i] /= options.lever_length;
-            interpolated_consumtions = Calculation_formulas.Interpolated_y(
-                options.Get_list_rpm(), options.Get_list_consumption(), interpolated_rpms);
-            for (int i = 0; i < interpolated_consumtions.Count; i++)
-                interpolated_consumtions[i] /= 3600f;
-
-            engine_state = false;
-            rpm = 0;
-            rpm_old = 0;
-            load_state = false;
-
             sound_source = GetComponent<AudioSource>();
             gauge_rpm = transform.Find("Gauge_rpm").GetComponent<Gauge>();
-            gauge_rpm.Set_max_value(7000f);
             gauge_p = transform.Find("Gauge_p").GetComponent<Gauge>();
-            gauge_p.Set_max_value(options.max_moment / options.lever_length);
             gauge_load = transform.Find("Gauge_load").GetComponent<Gauge>();
-            gauge_load.Set_max_value(options.max_moment / options.lever_length);
             load_switch = transform.Find("Load_switch").Find("Head").GetComponent<Load_switch>();
             rpm_slider = transform.Find("Rpm_slider").Find("Head").GetComponent<Rpm_slider>();
             starter = transform.Find("Starter").Find("Head").GetComponent<Starter>();
             starter.Add_listener_prestarted(Engine_prestart);
             starter.Add_listener_started(Engine_start);
             starter.Add_listener_stoped(Engine_stop);
+            transform.Find("Lever_length").Find("Info").GetComponent<TextMesh>().text 
+                = options.lever_length.ToString() + "м";
             info_system = transform.Find("Info_system").GetComponent<Info_system>();
             temperature = transform.Find("Temperature").GetComponent<Temperature>();
-            temperature.Heat_time_set(options.heat_time);
             temperature.Add_listener_heated(Engine_heat_ready);
+
+            Setup_values();
         }
         else
             enabled = false; // функция обновления не будет работать
@@ -84,7 +68,7 @@ public class Stand_controller : MonoBehaviour
                 fuel_weight -= Interpolate(rpm_old, interpolated_consumtions) * temperature.Penalty();
 
                 sound_source.pitch = rpm_old / 2000f;
-                sound_source.volume = Mathf.InverseLerp(1000f, 7000f, rpm) + 0.3f;
+                sound_source.volume = Mathf.InverseLerp(600f, 7000f, rpm) + 0.3f;
                 action_update(); // обновление количества топлива для весов
                 anim.SetFloat("speed", rpm_old / 700); // установка скорости для анимации
 
@@ -110,6 +94,30 @@ public class Stand_controller : MonoBehaviour
         gauge_rpm.Value(rpm_old);
         gauge_p.Value(Interpolate(rpm_old, interpolated_moments));
         gauge_load.Value(load_switch.Get_procent() * options.max_moment / options.lever_length);
+    }
+
+    private void Setup_values()
+    {
+        interpolated_rpms = Calculation_formulas.Interpolated_x(
+                options.Get_list_rpm(), options.interpolation);
+        interpolated_moments = Calculation_formulas.Interpolated_y(
+            options.Get_list_rpm(), options.Get_list_moment(), interpolated_rpms);
+        for (int i = 0; i < interpolated_moments.Count; i++)
+            interpolated_moments[i] /= options.lever_length;
+        interpolated_consumtions = Calculation_formulas.Interpolated_y(
+            options.Get_list_rpm(), options.Get_list_consumption(), interpolated_rpms);
+        for (int i = 0; i < interpolated_consumtions.Count; i++)
+            interpolated_consumtions[i] /= 3600f;
+
+        engine_state = false;
+        rpm = 0;
+        rpm_old = 0;
+        load_state = false;
+
+        gauge_rpm.Set_max_value(7000f);
+        gauge_p.Set_max_value(options.max_moment / options.lever_length);
+        gauge_load.Set_max_value(options.max_moment / options.lever_length);
+        temperature.Heat_time_set(options.heat_time);
     }
 
     private float Interpolate(int rpm_val, List<float> info)

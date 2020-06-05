@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Options_configuration : MonoBehaviour
 {
-    private Table_rpm_options scroll;
+    private Table_rpm_options table;
     private Engine_options options;
     private Engine_options options_old;
     private Graph_shower graph;
@@ -29,10 +29,10 @@ public class Options_configuration : MonoBehaviour
 
     private void Awake() // нахождение всех полей
     {
-        scroll = transform.Find("Scroll").GetComponent<Table_rpm_options>();
-        scroll.Add_listener_update_first(() => Graph_update(0));
-        scroll.Add_listener_update_second(() => Graph_update(1));
-        scroll.Add_listener_update_third(() => Graph_update(2));
+        table = transform.Find("Table").GetComponent<Table_rpm_options>();
+        table.Add_listener_update_first(() => Graph_update(2));
+        table.Add_listener_update_second(() => Graph_update(0));
+        table.Add_listener_update_third(() => Graph_update(1));
         input_m = transform.Find("Input_1").GetComponent<InputField>();
         input_l = transform.Find("Input_2").GetComponent<InputField>();
         input_t = transform.Find("Input_3").GetComponent<InputField>();
@@ -41,7 +41,7 @@ public class Options_configuration : MonoBehaviour
         input_inter.onValueChanged.AddListener((value) =>
             transform.Find("Input_text_4").GetComponent<InputField>().text = value.ToString());
         // обновить все графики, если было изменено значение интерполяции
-        input_inter.onValueChanged.AddListener((value) => Graph_update(3));
+        input_inter.onValueChanged.AddListener((value) => Graph_update(2));
         input_hints = transform.Find("Input_5").GetComponent<InputField>();
         input_hints.onEndEdit.AddListener(Hints_update);
         input_car = transform.Find("Input_6").GetComponent<InputField>();
@@ -53,7 +53,7 @@ public class Options_configuration : MonoBehaviour
             { "Подсказка 1", "Подсказка 2", "Подсказка 3", "Подсказка 4"});
         hints_condition = transform.Find("Text_condition_5").GetComponent<Text>();
         graph = transform.Find("Graph").GetComponent<Graph_shower>();
-        transform.Find("Save_button").GetComponent<Button>().onClick.AddListener(Confirm_button);
+        transform.Find("Save_button").GetComponent<Button>().onClick.AddListener(Save);
         transform.Find("Load_button").GetComponent<Button>().onClick.AddListener(Load);
         transform.Find("Exit_button").GetComponent<Button>().onClick.AddListener(
             () => transform.parent.parent.gameObject.SetActive(false));
@@ -67,7 +67,18 @@ public class Options_configuration : MonoBehaviour
         action_close?.Invoke();
     }
 
-    private void Confirm_button() // нажата кнопка сохранить
+    private void Dropdown_updated(int value)
+    {
+        input_hints.text = hint_texts[value];
+        hints_condition.text = conditions[value];
+    }
+
+    private void Hints_update(string value)
+    {
+        hint_texts[hints_dropdown.value] = value;
+    }
+
+    private void Save()
     {
         if (string.IsNullOrEmpty(input_m.text)) input_m.text = "0";
         if (string.IsNullOrEmpty(input_l.text)) input_l.text = "0";
@@ -87,22 +98,6 @@ public class Options_configuration : MonoBehaviour
         options.hints = hint_texts;
         options.max_moment = graph.Get_max_moment();
 
-        Save();
-    }
-
-    private void Dropdown_updated(int value)
-    {
-        input_hints.text = hint_texts[value];
-        hints_condition.text = conditions[value];
-    }
-
-    private void Hints_update(string value)
-    {
-        hint_texts[hints_dropdown.value] = value;
-    }
-
-    private void Save()
-    {
         options_old = options;
     }
 
@@ -119,18 +114,18 @@ public class Options_configuration : MonoBehaviour
         input_m.text = options.fuel_amount.ToString(culture);
         input_l.text = options.lever_length.ToString(culture);
         input_t.text = options.heat_time.ToString(culture);
-        scroll.AddMany(options.Get_rpms());
+        table.AddMany(options.Get_rpms());
         input_inter.value = options.interpolation;
         input_hints.text = hint_texts[hints_dropdown.value];
         hints_condition.text = conditions[hints_dropdown.value];
-        Graph_update(3);
+        Graph_update(2);
     }
 
-    // обновить график по номеру (0-момента, 1-мощности, 2-расхода, 3 - обновить все)
+    // обновить график по номеру (0-момента, мощности, 1-расхода, удельного расхода, 2 - обновить все)
     private void Graph_update(int graph_num) 
     {
         options.interpolation = (int)input_inter.value;
-        options.Set_rpms(scroll.GetItems());
+        options.Set_rpms(table.GetItems());
         if (options.rpms.Count != 0)
         {
             options.rpms.Sort((a, b) => a.rpm.CompareTo(b.rpm));
@@ -141,7 +136,6 @@ public class Options_configuration : MonoBehaviour
     public void Set_profile(Engine_options profile)
     {
         options_old = profile;
-        options = profile;
         Load();
     }
 

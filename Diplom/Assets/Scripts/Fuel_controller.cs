@@ -6,9 +6,9 @@ public class Fuel_controller : MonoBehaviour
 {
     private Scale scale;
     private Glass_detection detector;
-    private Item_gas_tank fuel_tank;
-    private Item_glass glass;
-    private Item_fuel_pomp fuel_pomp;
+    private Gas_tank fuel_tank;
+    private Glass glass;
+    private Fuel_pomp fuel_pomp;
     private UnityAction action_hints;
 
     private bool glass_on_scale;
@@ -16,7 +16,7 @@ public class Fuel_controller : MonoBehaviour
 
     private void Awake()
     {
-        fuel_pomp = transform.Find("Fuel_pomp").GetComponent<Item_fuel_pomp>();
+        fuel_pomp = transform.Find("Fuel_pomp").GetComponent<Fuel_pomp>();
         fuel_pomp.Add_listener(Fuel_pomp_clicked);
 
         scale = transform.Find("Scale").GetComponent<Scale>();
@@ -25,10 +25,10 @@ public class Fuel_controller : MonoBehaviour
         detector.Add_listener_enter(Glass_set);
         detector.Add_listener_exit(Glass_unset);
 
-        fuel_tank = transform.Find("Fuel_tank").GetComponent<Item_gas_tank>();
+        fuel_tank = transform.Find("Fuel_tank").GetComponent<Gas_tank>();
         fuel_tank.Add_listener(Gas_tank_clicked);
 
-        glass = transform.Find("Glass").GetComponent<Item_glass>();
+        glass = transform.Find("Glass").GetComponent<Glass>();
 
         engine_in_work = false;
     }
@@ -91,6 +91,11 @@ public class Fuel_controller : MonoBehaviour
             glass.Fuel_update(1);
             yield return new WaitForSeconds(time_delay);
         }
+    }
+
+    public void Load_options(int fuel_value) // получить загруженные данные
+    {
+        fuel_tank.Set_fuel(fuel_value);
     }
 
     public float Fuel_get() // получение количества топлива для стенда двигателя

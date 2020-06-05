@@ -46,7 +46,7 @@ public class Menu_main : MonoBehaviour
 
     private void Engine_options()
     {
-        SceneManager.LoadScene("Engine_options");
+        SceneManager.LoadScene("Options");
     }
 
     private void Options_app()

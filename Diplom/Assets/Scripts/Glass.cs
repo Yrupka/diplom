@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Item_glass : MonoBehaviour
+public class Glass : MonoBehaviour
 {
     private AudioSource sound;
     private Transform base_parent;

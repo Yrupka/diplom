@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class Options_check : MonoBehaviour
 {
-    public Stand_controller engine_controller;
-    public Item_gas_tank item_gas_tank;
+    public Stand_controller stand_controller;
+    public Fuel_controller fuel_controller;
     public Menu_interactive menu;
 
     private void Awake()
@@ -21,8 +21,8 @@ public class Options_check : MonoBehaviour
                 options_empty.gameObject.SetActive(true);
             else
             {
-                engine_controller.Load_options(options);
-                item_gas_tank.Load_options(options.fuel_amount);
+                stand_controller.Load_options(options);
+                fuel_controller.Load_options(options.fuel_amount);
                 menu.Load_options(options.hints, options.profile_show, options.car_name, options.engine_name);
             }
         }

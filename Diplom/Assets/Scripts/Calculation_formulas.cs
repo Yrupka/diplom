@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Calculation_formulas
+public static class Calculation_formulas
 {
     // функция вычисляющая интерполирующую состовляющую графика, label_x,y - значения исходной функции
     private static float Interpolate(float x, List<int> label_x, List<float> label_y)

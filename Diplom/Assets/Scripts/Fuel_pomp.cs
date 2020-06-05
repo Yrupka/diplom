@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Item_fuel_pomp : Item_highligh
+public class Fuel_pomp : Item_highligh
 {
     private AudioSource sound;
     private Animator anim;

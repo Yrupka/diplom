@@ -37,12 +37,6 @@ public class Menu_options : MonoBehaviour
         mouse_input = menu.Find("Mouse_sens").Find("Number").GetComponent<InputField>();
         mouse_input.onValueChanged.AddListener(Mouse_sensitivity_input);
 
-        if (!in_game)
-            menu.Find("Mouse_sens").gameObject.SetActive(false);
-
-        if (!in_game)
-            menu.Find("Sound").gameObject.SetActive(false);
-
         resolutions = menu.Find("Resolutions").Find("Dropdown").GetComponent<Dropdown>();
         resolutions.onValueChanged.AddListener(Resolutions);
         Setup_resolutions();
@@ -58,7 +52,8 @@ public class Menu_options : MonoBehaviour
         sound_input.onValueChanged.AddListener(Sound_input);
 
         sound_toggle = menu.Find("Sound").Find("Toggle").GetComponent<Toggle>();
-        sound_toggle.onValueChanged.AddListener(Sound_toggle);
+        if (in_game)
+            sound_toggle.onValueChanged.AddListener(Sound_toggle);
 
         menu.Find("Back").GetComponent<Button>().onClick.AddListener(Back);
 
@@ -77,12 +72,9 @@ public class Menu_options : MonoBehaviour
         if (PlayerPrefs.HasKey("screen"))
         {
             // загрузка параметров приложения
-            if (in_game)
-            {
-                sound_slider.value = PlayerPrefs.GetFloat("sound_level");
-                sound_toggle.isOn = PlayerPrefs.GetString("sound_state") == "True";
-                mouse_slider.value = PlayerPrefs.GetFloat("sens");
-            }
+            sound_slider.value = PlayerPrefs.GetFloat("sound_level");
+            sound_toggle.isOn = PlayerPrefs.GetString("sound_state") == "True";
+            mouse_slider.value = PlayerPrefs.GetFloat("sens");
             resolutions.value = PlayerPrefs.GetInt("res_index");
             fullscreen_toggle.isOn = PlayerPrefs.GetString("screen") == "True";
         }
@@ -95,7 +87,9 @@ public class Menu_options : MonoBehaviour
         sound_level = float.Parse(text, culture);
         sound_level = Mathf.Clamp(sound_level, 1f, 10f);
         sound_slider.value = sound_level;
-        audio_mixer.audioMixer.SetFloat("Master_volume", Mathf.Lerp(-80, 20, sound_level / 10));
+
+        if (in_game)
+            audio_mixer.audioMixer.SetFloat("Master_volume", Mathf.Lerp(-80, 20, sound_level / 10));
     }
 
     private void Mouse_sensitivity_input(string text)
@@ -106,7 +100,9 @@ public class Menu_options : MonoBehaviour
         mouse_sens_value = Mathf.Clamp(mouse_sens_value, 1f, 10f);
         mouse_input.text = mouse_sens_value.ToString(culture);
         mouse_slider.value = mouse_sens_value;
-        action_mouse();
+
+        if (in_game)
+            action_mouse();
     }
 
     private void Setup_resolutions()
@@ -152,12 +148,9 @@ public class Menu_options : MonoBehaviour
     {
         transform.gameObject.SetActive(false);
         // сохранение настроек приложения
-        if (in_game)
-        { 
-            PlayerPrefs.SetFloat("sound_level", sound_level);
-            PlayerPrefs.SetString("sound_state", sound_toggle.isOn.ToString());
-            PlayerPrefs.SetFloat("sens", mouse_sens_value);
-        }
+        PlayerPrefs.SetFloat("sound_level", sound_level);
+        PlayerPrefs.SetString("sound_state", sound_toggle.isOn.ToString());
+        PlayerPrefs.SetFloat("sens", mouse_sens_value);
         PlayerPrefs.SetInt("res_index", resolution_index);
         PlayerPrefs.SetString("screen", fullscreen_toggle.isOn.ToString());
     }

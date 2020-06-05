@@ -41,6 +41,31 @@ public class Graph_shower : MonoBehaviour
         }
     }
 
+    private void Moment_graphs(List<int> label_x, List<float> moments)
+    {
+        graph_data[0] = Calculation_formulas.Interpolated_y(
+                    label_x, moments, interpolated_x);
+
+        for (int i = 0; i < moments.Count; i++)
+            moments[i] *= label_x[i] / 9550f;
+        graph_data[1] = Calculation_formulas.Interpolated_y(
+            label_x, moments, interpolated_x);
+    }
+
+    private void Consumption_graphs(List<int> label_x, List<float> consumptions)
+    {
+        graph_data[2] = Calculation_formulas.Interpolated_y(
+                    label_x, consumptions, interpolated_x);
+    }
+
+    private void Moment_and_consumption_graph(List<int> label_x, List<float> moments, List<float> consumptions)
+    {
+        for (int i = 0; i < moments.Count; i++)
+            moments[i] *= label_x[i] / 9550f / consumptions[i] * 3.6f;
+        graph_data[3] = Calculation_formulas.Interpolated_y(
+            label_x, moments, interpolated_x);
+    }
+
     public void Calculate_graphs(Engine_options options, int graph_num)
     {
         List<int> label_x = options.Get_list_rpm();
@@ -51,39 +76,19 @@ public class Graph_shower : MonoBehaviour
         switch (graph_num)
         {
             case 0:
-                graph_data[0] = Calculation_formulas.Interpolated_y(
-                    options.Get_list_rpm(), options.Get_list_moment(), interpolated_x);
+                Moment_graphs(label_x, options.Get_list_moment());
                 break;
-            case 1:
-                List<float> power = options.Get_list_moment(); // мощность
-                for (int i = 0; i < power.Count; i++)
-                    power[i] *= label_x[i] / 9550f;
-                graph_data[1] = Calculation_formulas.Interpolated_y(
-                    options.Get_list_rpm(), power, interpolated_x);
-                break;
-            case 2:
-                graph_data[2] = Calculation_formulas.Interpolated_y(
-                    options.Get_list_rpm(), options.Get_list_consumption(), interpolated_x);
-                break;
-            case 3:
-                graph_data[0] = Calculation_formulas.Interpolated_y(
-                    options.Get_list_rpm(), options.Get_list_moment(), interpolated_x);
-                List<float> power_all = options.Get_list_moment(); // мощность
-                for (int i = 0; i < power_all.Count; i++)
-                    power_all[i] *= label_x[i] / 9550f;
-                graph_data[1] = Calculation_formulas.Interpolated_y(
-                    options.Get_list_rpm(), power_all, interpolated_x);
-                graph_data[2] = Calculation_formulas.Interpolated_y(
-                    options.Get_list_rpm(), options.Get_list_consumption(), interpolated_x);
 
-                List<float> specific_consumption = options.Get_list_moment(); // удельная расход
-                List<float> label_y_consumption = options.Get_list_consumption();
-                for (int i = 0; i < specific_consumption.Count; i++)
-                    specific_consumption[i] *= label_x[i] / 9550f / label_y_consumption[i] * 3.6f;
-                graph_data[3] = Calculation_formulas.Interpolated_y(
-                    options.Get_list_rpm(), specific_consumption, interpolated_x);
+            case 1:
+                Consumption_graphs(label_x, options.Get_list_consumption());
                 break;
+
+            case 2:
+                Moment_graphs(label_x, options.Get_list_moment());
+                Consumption_graphs(label_x, options.Get_list_consumption());
+                break;   
         }
+        Moment_and_consumption_graph(label_x, options.Get_list_moment(), options.Get_list_consumption());
         Graph_change(dropdown.value);
     }
 

@@ -43,9 +43,12 @@ public class Profile_system : MonoBehaviour
     {
         if (current_profile_index == -1)
             current_profile_index = 0;
-        options.Insert(0, options[current_profile_index]);
-        options.RemoveAt(current_profile_index + 1);
 
+        if (options.Count > 1)
+        {
+            options.Insert(0, options[current_profile_index]);
+            options.RemoveAt(current_profile_index + 1);
+        }
         File_controller.Save_engine_options(options);
     }
 
@@ -128,6 +131,7 @@ public class Profile_system : MonoBehaviour
     {
         transform.parent.parent.gameObject.SetActive(true);
         options[current_profile_index] = engine_options.Get_profile();
+        Debug.Log(options[current_profile_index].max_moment);
         items_list[current_profile_index].transform.Find("Label").GetComponent<Text>().text =
             options[current_profile_index].car_name + "-" + options[current_profile_index].engine_name;
     }

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Item_gas_tank : Item_highligh
+public class Gas_tank : Item_highligh
 {
     private AudioSource sound;
     private Animator anim;
@@ -33,9 +33,9 @@ public class Item_gas_tank : Item_highligh
         interactable = true;
     }
 
-    public void Load_options(int loaded_options) // получить загруженные данные
+    public void Set_fuel(int fuel) // получить загруженные данные
     {
-        fuel_add_amount = loaded_options;
+        fuel_add_amount = fuel;
     }
 
     public void Play_animation()
