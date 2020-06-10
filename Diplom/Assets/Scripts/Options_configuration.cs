@@ -7,7 +7,6 @@ public class Options_configuration : MonoBehaviour
 {
     private Table_rpm_options table;
     private Engine_options options;
-    private Engine_options options_old;
     private Graph_shower graph;
 
     private InputField input_m; // масса добавляемого топлива
@@ -95,15 +94,16 @@ public class Options_configuration : MonoBehaviour
         options.fuel_amount = int.Parse(input_m.text, culture);
         options.lever_length = lever;
         options.heat_time = int.Parse(input_t.text);
+        options.Set_rpms(table.GetItems());
+        if (options.rpms.Count != 0)
+            options.rpms.Sort((a, b) => a.rpm.CompareTo(b.rpm));
+        options.interpolation = (int)input_inter.value;
         options.hints = hint_texts;
         options.max_moment = graph.Get_max_moment();
-
-        options_old = options;
     }
 
     private void Load()
     {
-        options = options_old;
         graph.Clear_graphs();
 
         hints_dropdown.value = 0;
@@ -124,24 +124,25 @@ public class Options_configuration : MonoBehaviour
     // обновить график по номеру (0-момента, мощности, 1-расхода, удельного расхода, 2 - обновить все)
     private void Graph_update(int graph_num) 
     {
-        options.interpolation = (int)input_inter.value;
-        options.Set_rpms(table.GetItems());
-        if (options.rpms.Count != 0)
+        Engine_options graph_options = new Engine_options("","");
+        graph_options.Set_rpms(table.GetItems());
+        graph_options.interpolation = (int)input_inter.value;
+        if (graph_options.rpms.Count != 0)
         {
-            options.rpms.Sort((a, b) => a.rpm.CompareTo(b.rpm));
-            graph.Calculate_graphs(options, graph_num);
+            graph_options.rpms.Sort((a, b) => a.rpm.CompareTo(b.rpm));
+            graph.Calculate_graphs(graph_options, graph_num);
         }
     }
 
     public void Set_profile(Engine_options profile)
     {
-        options_old = profile;
+        options = profile;
         Load();
     }
 
     public Engine_options Get_profile()
     {
-        return options_old;
+        return options;
     }
 
     public void Add_listener_closed(UnityAction action)

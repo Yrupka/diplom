@@ -131,7 +131,6 @@ public class Profile_system : MonoBehaviour
     {
         transform.parent.parent.gameObject.SetActive(true);
         options[current_profile_index] = engine_options.Get_profile();
-        Debug.Log(options[current_profile_index].max_moment);
         items_list[current_profile_index].transform.Find("Label").GetComponent<Text>().text =
             options[current_profile_index].car_name + "-" + options[current_profile_index].engine_name;
     }
